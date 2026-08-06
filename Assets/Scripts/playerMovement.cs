@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,6 +17,16 @@ public class playerMovement : MonoBehaviour
 
     private static readonly int isRunXHash = Animator.StringToHash("isRunX");
     private static readonly int isRunXYHash = Animator.StringToHash("isRunXY");
+    private static readonly int isHitHash = Animator.StringToHash("isHit");
+    private static readonly int isBlockHash = Animator.StringToHash("isBlock");
+
+    [SerializeField]private BoxCollider2D attackHitbox;
+    [SerializeField]private BoxCollider2D blockHitbox;
+
+    Vector3 scale;
+
+    // control settings
+    
 
 
 
@@ -25,12 +36,20 @@ public class playerMovement : MonoBehaviour
         sp = gameObject.GetComponent<SpriteRenderer>();
     }
 
+    private void Start()
+    {
+        scale =transform.localScale;
+        scale.x = Mathf.Abs(scale.x);
+    }
+
     void Update()
     {
         //player moves right
         if (Keyboard.current.rightArrowKey.isPressed)
         {
-            sp.flipX = false;
+            //sp.flipX = false;
+            scale.x = Mathf.Abs(scale.x);
+            transform.localScale = scale;
             moveRight = true;
 
         }
@@ -43,7 +62,11 @@ public class playerMovement : MonoBehaviour
         //player moves left
         if (Keyboard.current.leftArrowKey.isPressed)
         {
-            sp.flipX = true;
+            //sp.flipX = true;
+            //transform.localScale = new Vector3(-1, 1, 1);
+            scale.x = -Mathf.Abs(scale.x);
+
+            transform.localScale = scale;
             moveLeft = true;
 
 
@@ -71,6 +94,8 @@ public class playerMovement : MonoBehaviour
         {
             moveDown = false;
         }
+
+
     }
 
     private void FixedUpdate()
@@ -103,6 +128,25 @@ public class playerMovement : MonoBehaviour
 
         rb.linearVelocity = direction.normalized * playerSpeed;
 
+        //attack
+        if (Keyboard.current.spaceKey.isPressed)
+        {
+
+            StartCoroutine(PlayerHitting());
+        }
+        // block mechanics
+        if (Keyboard.current.leftCtrlKey.isPressed)
+        {
+            blockHitbox.enabled = true;
+            rb.linearVelocity = Vector2.zero;
+        }
+        else
+        {
+            blockHitbox.enabled = false;
+        }
+
+        
+
         //animation function
         handleAnimation();
     }
@@ -120,11 +164,12 @@ public class playerMovement : MonoBehaviour
             animator.SetBool(isRunXHash, false);
 
         }
-        if ((direction.y==1)&&(direction.x==1||direction.x==-1))
+        if ((direction.y == 1) && (direction.x == 1 || direction.x == -1))
         {
             animator.SetBool(isRunXYHash, true);
         }
-        else if(direction.y==1){
+        else if (direction.y == 1)
+        {
             animator.SetBool(isRunXYHash, true);
 
         }
@@ -132,5 +177,42 @@ public class playerMovement : MonoBehaviour
         {
             animator.SetBool(isRunXYHash, false);
         }
+
+
+        if (Keyboard.current.spaceKey.isPressed)
+        {
+            animator.SetBool(isHitHash, true);
+        }
+
+        if (Keyboard.current.leftCtrlKey.isPressed)
+        {
+            animator.SetBool(isBlockHash, true) ;
+        }
+        else
+        {
+            animator.SetBool(isBlockHash, false);
+
+        }
+
+
     }
+
+
+    IEnumerator PlayerHitting()
+    {
+        float animationTime = 0f;
+
+        animator.SetBool(isHitHash, true);
+        animationTime = animator.GetCurrentAnimatorStateInfo(0).length;
+
+        attackHitbox.enabled = true;
+
+
+        yield return new WaitForSeconds(animationTime);
+        animator.SetBool(isHitHash, false);
+        attackHitbox.enabled = false;
+    }
+    
+
 }
+
