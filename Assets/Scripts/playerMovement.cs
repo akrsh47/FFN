@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,7 +12,7 @@ public class playerMovement : MonoBehaviour
     public float playerSpeed = 5f;
     private bool moveLeft = false, moveRight = false;
     private bool moveUp = false, moveDown = false;
-    Vector2 direction;
+    private Vector2 direction;
 
     [SerializeField] private Animator animator;
 
@@ -19,14 +20,21 @@ public class playerMovement : MonoBehaviour
     private static readonly int isRunXYHash = Animator.StringToHash("isRunXY");
     private static readonly int isHitHash = Animator.StringToHash("isHit");
     private static readonly int isBlockHash = Animator.StringToHash("isBlock");
+    private static readonly int isHurtHash = Animator.StringToHash("isHurt");
 
-    [SerializeField]private BoxCollider2D attackHitbox;
-    [SerializeField]private BoxCollider2D blockHitbox;
+    [SerializeField] private BoxCollider2D attackHitbox;
+    [SerializeField] private BoxCollider2D blockHitbox;
 
     Vector3 scale;
 
     // control settings
-    
+    public Key[] movements;
+    public Key[] actions;
+
+
+    [HideInInspector] public bool isKnockedBack;
+
+
 
 
 
@@ -38,14 +46,56 @@ public class playerMovement : MonoBehaviour
 
     private void Start()
     {
-        scale =transform.localScale;
+        scale = transform.localScale;
         scale.x = Mathf.Abs(scale.x);
+
+        if (gameObject.name == "Player1")
+        {
+            //initialize controls
+            movements = new Key[]
+            {
+            Key.D,
+            Key.A,
+            Key.W,
+            Key.S,
+            };
+
+            actions = new Key[] {
+                Key.LeftCtrl,
+                Key.LeftShift
+
+            };
+        }
+
+        if (gameObject.name == "Player2")
+        {
+            //initialize controls
+            movements = new Key[]
+            {
+            Key.RightArrow,
+            Key.LeftArrow,
+            Key.UpArrow,
+            Key.DownArrow,
+            };
+
+            actions = new Key[] {
+                Key.NumpadPlus,
+                Key.NumpadEnter
+
+            };
+        }
+
+
+
+        isKnockedBack = false;
+
+
     }
 
     void Update()
     {
         //player moves right
-        if (Keyboard.current.rightArrowKey.isPressed)
+        if (Keyboard.current[movements[0]].isPressed)
         {
             //sp.flipX = false;
             scale.x = Mathf.Abs(scale.x);
@@ -53,14 +103,14 @@ public class playerMovement : MonoBehaviour
             moveRight = true;
 
         }
-        else if (!Keyboard.current.rightArrowKey.isPressed)
+        else if (!Keyboard.current[movements[0]].isPressed)
         {
             moveRight = false;
 
 
         }
         //player moves left
-        if (Keyboard.current.leftArrowKey.isPressed)
+        if (Keyboard.current[movements[1]].isPressed)
         {
             //sp.flipX = true;
             //transform.localScale = new Vector3(-1, 1, 1);
@@ -71,26 +121,26 @@ public class playerMovement : MonoBehaviour
 
 
         }
-        else if (!Keyboard.current.leftArrowKey.isPressed)
+        else if (!Keyboard.current[movements[1]].isPressed)
         {
             moveLeft = false;
 
         }
         //player moves up
-        if (Keyboard.current.upArrowKey.isPressed)
+        if (Keyboard.current[movements[2]].isPressed)
         {
             moveUp = true;
         }
-        else if (!Keyboard.current.upArrowKey.isPressed)
+        else if (!Keyboard.current[movements[2]].isPressed)
         {
             moveUp = false;
         }
         //player moves down
-        if (Keyboard.current.downArrowKey.isPressed)
+        if (Keyboard.current[movements[3]].isPressed)
         {
             moveDown = true;
         }
-        else if (!Keyboard.current.downArrowKey.isPressed)
+        else if (!Keyboard.current[movements[3]].isPressed)
         {
             moveDown = false;
         }
@@ -126,32 +176,53 @@ public class playerMovement : MonoBehaviour
         }
 
 
-        rb.linearVelocity = direction.normalized * playerSpeed;
 
         //attack
-        if (Keyboard.current.spaceKey.isPressed)
+        if (Keyboard.current[actions[0]].isPressed)
         {
 
             StartCoroutine(PlayerHitting());
         }
         // block mechanics
-        if (Keyboard.current.leftCtrlKey.isPressed)
+        if (Keyboard.current[actions[1]].isPressed)
         {
             blockHitbox.enabled = true;
-            rb.linearVelocity = Vector2.zero;
+
+            // checking if player is not being knockedback then in block state the player must not move
+            if (isKnockedBack == false)
+            {
+                
+                rb.linearVelocity = Vector2.zero;
+
+
+            }
+
         }
         else
         {
             blockHitbox.enabled = false;
         }
 
-        
+        // checking if player is not being knockedback and also not in block state, player can move freely
+        if (isKnockedBack == false && blockHitbox.enabled == false)
+        {
+            rb.linearVelocity = direction.normalized * playerSpeed;
+
+        }
+        else if (isKnockedBack == true)
+        {
+
+            animator.SetBool(isHurtHash, true);
+            StartCoroutine(EndKnockBack());
+
+
+        }
 
         //animation function
-        handleAnimation();
+        HandleAnimation();
     }
 
-    void handleAnimation()
+    void HandleAnimation()
     {
         // running animations
         if (direction.x == 1 || direction.x == -1 || direction.y == -1)
@@ -179,14 +250,14 @@ public class playerMovement : MonoBehaviour
         }
 
 
-        if (Keyboard.current.spaceKey.isPressed)
+        if (Keyboard.current[actions[0]].isPressed)
         {
             animator.SetBool(isHitHash, true);
         }
 
-        if (Keyboard.current.leftCtrlKey.isPressed)
+        if (Keyboard.current[actions[1]].isPressed)
         {
-            animator.SetBool(isBlockHash, true) ;
+            animator.SetBool(isBlockHash, true);
         }
         else
         {
@@ -212,7 +283,23 @@ public class playerMovement : MonoBehaviour
         animator.SetBool(isHitHash, false);
         attackHitbox.enabled = false;
     }
-    
+
+
+    IEnumerator EndKnockBack()
+    {
+
+        yield return new WaitForSeconds(0.2f);
+        animator.SetBool(isHurtHash, false);
+
+        isKnockedBack = false;
+
+
+    }
+
+
+
+
+
 
 }
 
