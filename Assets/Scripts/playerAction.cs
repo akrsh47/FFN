@@ -8,9 +8,12 @@ public class playerAction : MonoBehaviour
     public float pushForce;
     public BoxCollider2D attackHitbox;
 
+
+    private float hitDamage;
     private void Start()
     {
         pushForce = 4f;
+        hitDamage = 10f;
     }
 
     
@@ -24,6 +27,8 @@ public class playerAction : MonoBehaviour
             Transform child = collision.transform.Find("BlockHitbox");
             GameObject blockHitbox = child.gameObject;
             BoxCollider2D blockHitboxCollider = blockHitbox.GetComponent<BoxCollider2D>();
+
+            playerStats ps = rb.GetComponent<playerStats>();
 
 
 
@@ -43,6 +48,9 @@ public class playerAction : MonoBehaviour
             {
                 rb.linearVelocity = new Vector2(transform.localScale.x, 0f) * pushForce;
                 pm.isKnockedBack = true;
+
+
+                ps.playerHealth -= hitDamage;
             }
             
 
@@ -54,6 +62,7 @@ public class playerAction : MonoBehaviour
         }
     }
 
+    
 
     
 

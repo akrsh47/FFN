@@ -271,15 +271,16 @@ public class playerMovement : MonoBehaviour
 
     IEnumerator PlayerHitting()
     {
-        float animationTime = 0f;
+        //float animationTime = 0f;
 
         animator.SetBool(isHitHash, true);
-        animationTime = animator.GetCurrentAnimatorStateInfo(0).length;
+        //animationTime = animator.GetCurrentAnimatorStateInfo(0).length;
+        
 
         attackHitbox.enabled = true;
 
 
-        yield return new WaitForSeconds(animationTime);
+        yield return new WaitForSeconds(0.3f);
         animator.SetBool(isHitHash, false);
         attackHitbox.enabled = false;
     }
