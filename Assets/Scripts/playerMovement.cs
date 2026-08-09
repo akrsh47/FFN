@@ -33,7 +33,7 @@ public class playerMovement : MonoBehaviour
 
 
     [HideInInspector] public bool isKnockedBack;
-
+    playerStats stats;
 
 
 
@@ -42,6 +42,7 @@ public class playerMovement : MonoBehaviour
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
         sp = gameObject.GetComponent<SpriteRenderer>();
+        stats = gameObject.GetComponent<playerStats>();
     }
 
     private void Start()
@@ -94,6 +95,32 @@ public class playerMovement : MonoBehaviour
 
     void Update()
     {
+
+        direction = Vector2.zero;
+        // moving right
+        if (moveRight)
+        {
+            direction.x = 1;
+        }
+        // moving left
+        if (moveLeft)
+        {
+            direction.x = -1;
+        }
+
+        // moving up
+        if (moveUp)
+        {
+            direction.y = 1;
+
+        }
+
+        // moving down
+        if (moveDown)
+        {
+            direction.y = -1;
+        }
+
         //player moves right
         if (Keyboard.current[movements[0]].isPressed)
         {
@@ -145,53 +172,27 @@ public class playerMovement : MonoBehaviour
             moveDown = false;
         }
 
-
-    }
-
-    private void FixedUpdate()
-    {
-        direction = Vector2.zero;
-        // moving right
-        if (moveRight)
-        {
-            direction.x = 1;
-        }
-        // moving left
-        if (moveLeft)
-        {
-            direction.x = -1;
-        }
-
-        // moving up
-        if (moveUp)
-        {
-            direction.y = 1;
-
-        }
-
-        // moving down
-        if (moveDown)
-        {
-            direction.y = -1;
-        }
-
-
-
         //attack
-        if (Keyboard.current[actions[0]].isPressed)
+        if (Keyboard.current[actions[0]].wasPressedThisFrame)
         {
+            // only make the player use stamina if its above 10f
+            if (stats.playerStamina >= stats.hitStaminaCost)
+            {
 
+                stats.playerStamina -= stats.hitStaminaCost;
+            }
             StartCoroutine(PlayerHitting());
         }
         // block mechanics
         if (Keyboard.current[actions[1]].isPressed)
         {
+            //stats.playerStamina-=20f*Time.deltaTime;
             blockHitbox.enabled = true;
 
             // checking if player is not being knockedback then in block state the player must not move
             if (isKnockedBack == false)
             {
-                
+
                 rb.linearVelocity = Vector2.zero;
 
 
@@ -202,6 +203,15 @@ public class playerMovement : MonoBehaviour
         {
             blockHitbox.enabled = false;
         }
+
+
+
+        //animation function
+        HandleAnimation();
+    }
+
+    private void FixedUpdate()
+    {
 
         // checking if player is not being knockedback and also not in block state, player can move freely
         if (isKnockedBack == false && blockHitbox.enabled == false)
@@ -215,11 +225,9 @@ public class playerMovement : MonoBehaviour
             animator.SetBool(isHurtHash, true);
             StartCoroutine(EndKnockBack());
 
-
         }
 
-        //animation function
-        HandleAnimation();
+
     }
 
     void HandleAnimation()
@@ -250,7 +258,7 @@ public class playerMovement : MonoBehaviour
         }
 
 
-        if (Keyboard.current[actions[0]].isPressed)
+        if (Keyboard.current[actions[0]].wasPressedThisFrame)
         {
             animator.SetBool(isHitHash, true);
         }
@@ -275,12 +283,13 @@ public class playerMovement : MonoBehaviour
 
         animator.SetBool(isHitHash, true);
         //animationTime = animator.GetCurrentAnimatorStateInfo(0).length;
-        
+
 
         attackHitbox.enabled = true;
 
 
-        yield return new WaitForSeconds(0.3f);
+
+        yield return new WaitForSeconds(0.1f);
         animator.SetBool(isHitHash, false);
         attackHitbox.enabled = false;
     }

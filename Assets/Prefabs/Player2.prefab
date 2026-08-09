@@ -318,6 +318,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::playerStats
   playerHealth: 0
+  playerStamina: 0
+  hitStaminaCost: 0
+  blockStaminaCost: 0
+  healthText: {fileID: 0}
+  staminaText: {fileID: 0}
+  blockHitbox: {fileID: 7620308160565096072}
 --- !u!1 &8939339885004198628
 GameObject:
   m_ObjectHideFlags: 0
