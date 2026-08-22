@@ -21,6 +21,8 @@ public class playerMovement : MonoBehaviour
     private static readonly int isHitHash = Animator.StringToHash("isHit");
     private static readonly int isBlockHash = Animator.StringToHash("isBlock");
     private static readonly int isHurtHash = Animator.StringToHash("isHurt");
+    private static readonly int isTiredHash = Animator.StringToHash("isTired");
+
 
     [SerializeField] private BoxCollider2D attackHitbox;
     [SerializeField] private BoxCollider2D blockHitbox;
@@ -257,10 +259,11 @@ public class playerMovement : MonoBehaviour
             animator.SetBool(isRunXYHash, false);
         }
 
-
+        // actions animations
         if (Keyboard.current[actions[0]].wasPressedThisFrame)
         {
             animator.SetBool(isHitHash, true);
+           
         }
 
         if (Keyboard.current[actions[1]].isPressed)
@@ -271,6 +274,18 @@ public class playerMovement : MonoBehaviour
         {
             animator.SetBool(isBlockHash, false);
 
+        }
+
+        // stats animations
+        if (stats.refillCooldown == true)
+        {
+           
+            animator.SetBool(isTiredHash, true);
+
+        }
+        else if(stats.refillCooldown == false)
+        {
+            animator.SetBool(isTiredHash, false);
         }
 
 

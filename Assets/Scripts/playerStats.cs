@@ -15,19 +15,25 @@ public class playerStats : MonoBehaviour
     public TMP_Text staminaText;
     Vector3 playerScreenPos;
 
-    [SerializeField]private BoxCollider2D blockHitbox;
+    [SerializeField] private BoxCollider2D blockHitbox;
 
-   
+    [HideInInspector]public bool refillCooldown;
+    private float refillCooldownTime;
+
+
 
     private void Start()
     {
         playerHealth = 100f;
-        playerStamina =100f;
+        playerStamina = 10f;
 
         hitStaminaCost = 10f;
-        blockStaminaCost= 5f;
+        blockStaminaCost = 5f;
 
         staminaRefillCost = 1f;
+
+        refillCooldown = false;
+        refillCooldownTime = 3f;
     }
     private void Update()
     {
@@ -52,9 +58,10 @@ public class playerStats : MonoBehaviour
         }
 
         //stamina
-        if (playerStamina <= 0)
+        if (playerStamina <= 0 && refillCooldown == false)
         {
             playerStamina = 0;
+            StartCoroutine(refillCooldownTimer());
         }
         if (playerStamina >= 100)
         {
@@ -68,14 +75,25 @@ public class playerStats : MonoBehaviour
 
     void RefillStamina()
     {
-        if (blockHitbox.enabled == false)
+        if (blockHitbox.enabled == false && refillCooldown == false)
         {
             playerStamina += staminaRefillCost * Time.deltaTime;
         }
-        else
+        else if (blockHitbox.enabled == true && refillCooldown == false)
         {
+
             playerStamina -= blockStaminaCost * Time.deltaTime;
         }
+
+    }
+
+    IEnumerator refillCooldownTimer()
+    {
+        refillCooldown = true;
+        yield return new WaitForSeconds(refillCooldownTime);
+        refillCooldown = false;
+        playerStamina = 1f;
+
 
     }
 
