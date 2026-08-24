@@ -813,6 +813,10 @@ PrefabInstance:
       propertyPath: staminaText
       value: 
       objectReference: {fileID: 1577665241}
+    - target: {fileID: 6800034553456483941, guid: 67ea5f0184310e047adad4e3301878b2, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7367795478723189337, guid: 67ea5f0184310e047adad4e3301878b2, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.06

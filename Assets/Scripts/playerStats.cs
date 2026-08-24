@@ -17,10 +17,18 @@ public class playerStats : MonoBehaviour
 
     [SerializeField] private BoxCollider2D blockHitbox;
 
-    [HideInInspector]public bool refillCooldown;
+    [HideInInspector] public bool refillCooldown;
     private float refillCooldownTime;
 
+    private playerMovement pm;
+    private playerAction pa;
+    private Rigidbody2D rb;
 
+    private void Awake()
+    {
+        pm = GetComponent<playerMovement>();
+        rb = GetComponent<Rigidbody2D>();
+    }
 
     private void Start()
     {
@@ -61,7 +69,10 @@ public class playerStats : MonoBehaviour
         if (playerStamina <= 0 && refillCooldown == false)
         {
             playerStamina = 0;
-            StartCoroutine(refillCooldownTimer());
+            pm.playerCanMove = false;
+            rb.linearVelocity = Vector2.zero;
+            StartCoroutine(RefillCooldownTimer());
+
         }
         if (playerStamina >= 100)
         {
@@ -87,14 +98,16 @@ public class playerStats : MonoBehaviour
 
     }
 
-    IEnumerator refillCooldownTimer()
+    IEnumerator RefillCooldownTimer()
     {
         refillCooldown = true;
         yield return new WaitForSeconds(refillCooldownTime);
         refillCooldown = false;
+        pm.playerCanMove = true;
         playerStamina = 1f;
 
 
     }
+
 
 }

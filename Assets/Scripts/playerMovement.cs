@@ -12,7 +12,7 @@ public class playerMovement : MonoBehaviour
     public float playerSpeed = 5f;
     private bool moveLeft = false, moveRight = false;
     private bool moveUp = false, moveDown = false;
-    private Vector2 direction;
+    [HideInInspector] public Vector2 direction;
 
     [SerializeField] private Animator animator;
 
@@ -35,9 +35,10 @@ public class playerMovement : MonoBehaviour
 
 
     [HideInInspector] public bool isKnockedBack;
+    private bool isEndingKnockback = false; // guard condition for knockback so that it doesnt run co routine every frame
     playerStats stats;
 
-
+    public bool playerCanMove;
 
 
     private void Awake()
@@ -91,6 +92,9 @@ public class playerMovement : MonoBehaviour
 
 
         isKnockedBack = false;
+        isEndingKnockback = false;
+
+        playerCanMove = true;
 
 
     }
@@ -141,8 +145,7 @@ public class playerMovement : MonoBehaviour
         //player moves left
         if (Keyboard.current[movements[1]].isPressed)
         {
-            //sp.flipX = true;
-            //transform.localScale = new Vector3(-1, 1, 1);
+
             scale.x = -Mathf.Abs(scale.x);
 
             transform.localScale = scale;
@@ -178,12 +181,15 @@ public class playerMovement : MonoBehaviour
         if (Keyboard.current[actions[0]].wasPressedThisFrame)
         {
             // only make the player use stamina if its above 10f
-            if (stats.playerStamina >= stats.hitStaminaCost)
+            // dont make player use attack and block at same
+            if (stats.playerStamina >= stats.hitStaminaCost && blockHitbox.enabled == false)
             {
 
                 stats.playerStamina -= stats.hitStaminaCost;
+                StartCoroutine(PlayerHitting());
+
             }
-            StartCoroutine(PlayerHitting());
+
         }
         // block mechanics
         if (Keyboard.current[actions[1]].isPressed)
@@ -216,15 +222,16 @@ public class playerMovement : MonoBehaviour
     {
 
         // checking if player is not being knockedback and also not in block state, player can move freely
-        if (isKnockedBack == false && blockHitbox.enabled == false)
+        if (isKnockedBack == false && blockHitbox.enabled == false && playerCanMove)
         {
+
             rb.linearVelocity = direction.normalized * playerSpeed;
 
+
         }
-        else if (isKnockedBack == true)
+        else if (isKnockedBack == true && !isEndingKnockback)
         {
 
-            animator.SetBool(isHurtHash, true);
             StartCoroutine(EndKnockBack());
 
         }
@@ -260,11 +267,6 @@ public class playerMovement : MonoBehaviour
         }
 
         // actions animations
-        if (Keyboard.current[actions[0]].wasPressedThisFrame)
-        {
-            animator.SetBool(isHitHash, true);
-           
-        }
 
         if (Keyboard.current[actions[1]].isPressed)
         {
@@ -277,15 +279,16 @@ public class playerMovement : MonoBehaviour
         }
 
         // stats animations
-        if (stats.refillCooldown == true)
+        if (stats.refillCooldown == true && isKnockedBack == false)
         {
-           
+
             animator.SetBool(isTiredHash, true);
 
         }
-        else if(stats.refillCooldown == false)
+        else if (stats.refillCooldown == false)
         {
             animator.SetBool(isTiredHash, false);
+
         }
 
 
@@ -294,29 +297,24 @@ public class playerMovement : MonoBehaviour
 
     IEnumerator PlayerHitting()
     {
-        //float animationTime = 0f;
-
-        animator.SetBool(isHitHash, true);
-        //animationTime = animator.GetCurrentAnimatorStateInfo(0).length;
-
-
+        animator.SetTrigger(isHitHash);
         attackHitbox.enabled = true;
 
 
 
         yield return new WaitForSeconds(0.1f);
-        animator.SetBool(isHitHash, false);
         attackHitbox.enabled = false;
     }
 
 
-    IEnumerator EndKnockBack()
+    public IEnumerator EndKnockBack()
     {
-
+        isEndingKnockback = true;
+        animator.SetTrigger(isHurtHash);
         yield return new WaitForSeconds(0.2f);
-        animator.SetBool(isHurtHash, false);
 
         isKnockedBack = false;
+        isEndingKnockback = false;
 
 
     }
