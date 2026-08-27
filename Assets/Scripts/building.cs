@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class building : MonoBehaviour
@@ -7,15 +8,15 @@ public class building : MonoBehaviour
     private float interval;
     [SerializeField]private Sprite[] buildingSprites;
     private SpriteRenderer sp;
-    public static event Action dropGarbage;
+    public static event Action dropGarbage;// event declared
 
     private float timer;
 
 
     
-    private int garbagePerBuilding;
+    [HideInInspector]public int garbagePerBuilding;
     [SerializeField]private GameObject[] garbageBags;
-    private int randomGarbage;
+    [HideInInspector]public int randomGarbage;
 
     private void Awake()
     {
@@ -74,21 +75,21 @@ public class building : MonoBehaviour
     void changeBuilding()
     {
         sp.sprite = buildingSprites[1];
-        dropGarbage?.Invoke();
+        dropGarbage?.Invoke();// event fires here
 
     }
 
-    void dropingGarbage()
+    void dropingGarbage()// function to happen in the event
     {
         garbageBags[randomGarbage].SetActive(true);
     }
 
-    private void OnEnable()
+    private void OnEnable()// when object enabled add this function to list of events happening
     {
         building.dropGarbage += dropingGarbage;
     }
 
-    private void OnDisable()
+    private void OnDisable()// when object disabled remove this function to list of events happening
     {
         building.dropGarbage -= dropingGarbage;
     }

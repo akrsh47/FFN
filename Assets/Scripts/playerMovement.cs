@@ -38,9 +38,9 @@ public class playerMovement : MonoBehaviour
     private bool isEndingKnockback = false; // guard condition for knockback so that it doesnt run co routine every frame
     playerStats stats;
 
-    public bool playerCanMove;
+    public  bool playerCanMove;
 
-
+    private garbageinteraction garbageScript;
     private void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
@@ -319,8 +319,49 @@ public class playerMovement : MonoBehaviour
 
     }
 
+    public void PlayerStunAfterDamage()
+    {
+        animator.SetTrigger(isHurtHash);
+        playerCanMove = false;
+    }
+    public void RemoveStun()
+    {
+        rb.linearDamping = 0f;
+        if (stats.playerStamina > 0)
+        {
+            playerCanMove = true;
+            
+        }
+    }
+
+    IEnumerator DelayAfterGarbageStun()
+    {
+        yield return new WaitForSeconds(1f);
+        if (stats.playerStamina > 0)
+        {
+            RemoveStun();
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("enemy"))
+        {
+            Debug.Log(stats.playerHealth + " " + gameObject.name);
+            rb.linearDamping = 10f;
+
+            garbageScript=collision.gameObject.GetComponent<garbageinteraction>();
+            garbageScript.endingHitPlayer = true;
+
+            StartCoroutine(DelayAfterGarbageStun());
+
+            garbageScript.endingHitPlayer = false;
+            garbageScript.hitPlayer= true;
 
 
+
+        }
+    }
 
 
 

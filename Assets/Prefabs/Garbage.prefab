@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5640214345850234935}
   m_Layer: 0
   m_Name: Garbage
-  m_TagString: Untagged
+  m_TagString: enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -214,3 +214,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   animator: {fileID: 3296472065932839882}
+  startingSprite: {fileID: -6581113436114519587, guid: ce5359bb81f435647a17007f579cab70, type: 3}
