@@ -6,24 +6,24 @@ public class building : MonoBehaviour
 {
 
     private float interval;
-    [SerializeField]private Sprite[] buildingSprites;
+    [SerializeField] private Sprite[] buildingSprites;
     private SpriteRenderer sp;
-    public static event Action dropGarbage;// event declared
+    public event Action dropGarbage;// event declared
 
     private float timer;
 
 
-    
-    [HideInInspector]public int garbagePerBuilding;
-    [SerializeField]private GameObject[] garbageBags;
-    [HideInInspector]public int randomGarbage;
+
+    [HideInInspector] public int garbagePerBuilding;
+    [SerializeField] private GameObject[] garbageBags;
+    [HideInInspector] public int randomGarbage;
 
     private void Awake()
     {
         sp = GetComponent<SpriteRenderer>();
 
 
-        
+
     }
     void Start()
     {
@@ -35,14 +35,30 @@ public class building : MonoBehaviour
         {
 
             garbagePerBuilding = 4;
-            garbageBags = new GameObject[garbagePerBuilding];
-            randomGarbage = UnityEngine.Random.Range(0, garbagePerBuilding);
+
+
 
         }
+        else if (gameObject.tag == "b2")
+        {
+            garbagePerBuilding = 6;
+
+        }
+        else if (gameObject.tag == "b3")
+        {
+            garbagePerBuilding = 4;
+        }
+        else if (gameObject.tag == "b4")
+        {
+            garbagePerBuilding = 6;
+        }
+        garbageBags = new GameObject[garbagePerBuilding];
+        randomGarbage = UnityEngine.Random.Range(0, garbagePerBuilding);
+
 
         for (int i = 0; i < garbagePerBuilding; i++)
         {
-            garbageBags[i]=transform.GetChild(i).gameObject;
+            garbageBags[i] = transform.GetChild(i).gameObject;
         }
     }
 
@@ -52,7 +68,7 @@ public class building : MonoBehaviour
         if (timer > interval)
         {
             changeBuilding();
-            Invoke(nameof(ResetTimer),interval);
+            Invoke(nameof(ResetTimer), interval);
         }
 
 
@@ -61,8 +77,8 @@ public class building : MonoBehaviour
 
     void ResetTimer()
     {
-        timer =1f;
-        sp.sprite=buildingSprites[0];
+        timer = 1f;
+        sp.sprite = buildingSprites[0];
         interval = UnityEngine.Random.Range(3f, 5f);
         randomGarbage = UnityEngine.Random.Range(0, garbagePerBuilding);
 
@@ -86,11 +102,11 @@ public class building : MonoBehaviour
 
     private void OnEnable()// when object enabled add this function to list of events happening
     {
-        building.dropGarbage += dropingGarbage;
+        dropGarbage += dropingGarbage;
     }
 
     private void OnDisable()// when object disabled remove this function to list of events happening
     {
-        building.dropGarbage -= dropingGarbage;
+        dropGarbage -= dropingGarbage;
     }
 }

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7729790958105823181}
   - component: {fileID: 7620308160565096072}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BlockHitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 3259871902351553009}
   - component: {fileID: 2534704362575477553}
   - component: {fileID: 4209173687475780844}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player2
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -164,7 +164,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 511526543
-  m_SortingLayer: 4
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -5115618752126089108, guid: 2a5fd702a5ebfee4d9640cf5d6796cdf, type: 3}
@@ -338,7 +338,7 @@ GameObject:
   m_Component:
   - component: {fileID: 212420098551102498}
   - component: {fileID: 5664712746103901759}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: AttackHitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}

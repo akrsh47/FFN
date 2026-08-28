@@ -38,7 +38,7 @@ public class playerMovement : MonoBehaviour
     private bool isEndingKnockback = false; // guard condition for knockback so that it doesnt run co routine every frame
     playerStats stats;
 
-    public  bool playerCanMove;
+    public bool playerCanMove;
 
     private garbageinteraction garbageScript;
     private void Awake()
@@ -330,7 +330,7 @@ public class playerMovement : MonoBehaviour
         if (stats.playerStamina > 0)
         {
             playerCanMove = true;
-            
+
         }
     }
 
@@ -347,16 +347,15 @@ public class playerMovement : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("enemy"))
         {
-            Debug.Log(stats.playerHealth + " " + gameObject.name);
             rb.linearDamping = 10f;
 
-            garbageScript=collision.gameObject.GetComponent<garbageinteraction>();
+            garbageScript = collision.gameObject.GetComponent<garbageinteraction>();
             garbageScript.endingHitPlayer = true;
 
             StartCoroutine(DelayAfterGarbageStun());
 
             garbageScript.endingHitPlayer = false;
-            garbageScript.hitPlayer= true;
+            garbageScript.hitPlayer = true;
 
 
 

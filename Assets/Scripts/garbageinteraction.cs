@@ -19,9 +19,9 @@ public class garbageinteraction : MonoBehaviour
 
     private bool garbageOnGround;
 
-    [HideInInspector]public bool hitPlayer;
-    [HideInInspector]public bool endingHitPlayer;// guard condition
-    
+    [HideInInspector] public bool hitPlayer;
+    [HideInInspector] public bool endingHitPlayer;// guard condition
+
     private playerMovement pm;
 
     private void Awake()
@@ -58,14 +58,13 @@ public class garbageinteraction : MonoBehaviour
     IEnumerator ResetPositon()
     {
         yield return new WaitForSeconds(1f);
-        garbageOnGround=false;
+        garbageOnGround = false;
         sp.sprite = startingSprite;
         gameObject.SetActive(false);
         gameObject.transform.position = startingPos;
         transform.rotation = Quaternion.identity;
         buildingScript.randomGarbage = UnityEngine.Random.Range(0, buildingScript.garbagePerBuilding);
 
-        //Debug.Log(buildingScript);
     }
 
     void garbageFell(Collision2D col)
@@ -78,7 +77,7 @@ public class garbageinteraction : MonoBehaviour
         {
             hitPlayer = true;
             ps = col.gameObject.GetComponent<playerStats>();
-            
+
             pm = col.gameObject.GetComponent<playerMovement>();
 
             if (garbageOnGround == false)
@@ -93,18 +92,18 @@ public class garbageinteraction : MonoBehaviour
                     }
                 }
             }
-            
-            
 
 
-            
+
+
+
 
         }
 
     }
 
 
-    
+
 
 
 }
