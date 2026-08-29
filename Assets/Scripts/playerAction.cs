@@ -15,15 +15,33 @@ public class playerAction : MonoBehaviour
 
     private float hitDamage;
 
+    private float autoKnockbackAmount;
+    private float autoKnockbackDelay;
+
+    public bool onKnockbackCooldown;
+
+    private playerMovement pm;
+
+    private BoxCollider2D playerCollider;
+
+    private SpriteRenderer sp;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         ps = GetComponent<playerStats>();
+        pm = GetComponent<playerMovement>();
+        playerCollider = GetComponent<BoxCollider2D>();
+        sp = GetComponent<SpriteRenderer>();
     }
     private void Start()
     {
         pushForce = 4f;
         hitDamage = 10f;
+
+        autoKnockbackDelay = 0.2f;
+        autoKnockbackAmount = 20f;
+
     }
 
 
@@ -89,10 +107,75 @@ public class playerAction : MonoBehaviour
         }
 
 
+
+
+
+
     }
 
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
 
+
+        if (collision.gameObject.CompareTag("knockbackEnemy"))
+        {
+            BoxCollider2D[] objectCollider = collision.gameObject.GetComponents<BoxCollider2D>();
+
+
+            SpriteRenderer sp = collision.gameObject.GetComponent<SpriteRenderer>();
+            // after hitting the player there should be a cooldown for the player to be hit again
+            if (onKnockbackCooldown == false)
+            {
+                ps.playerHealth -= 10;
+
+                if (sp.flipX == false)
+                {
+                    pm.onKnockback = true;
+                    rb.AddForce(Vector2.right * autoKnockbackAmount, ForceMode2D.Impulse);
+                    StartCoroutine(stopKnockback());
+                    StartCoroutine(knockbackCooldown(objectCollider));
+                }
+                else
+                {
+                    pm.onKnockback = true;
+                    rb.AddForce(Vector2.left * autoKnockbackAmount, ForceMode2D.Impulse);
+                    StartCoroutine(stopKnockback());
+                    StartCoroutine(knockbackCooldown(objectCollider));
+
+                }
+            }
+
+        }
+    }
+
+    IEnumerator stopKnockback()
+    {
+
+        yield return new WaitForSeconds(autoKnockbackDelay);
+        pm.onKnockback = false;
+
+
+
+    }
+    IEnumerator knockbackCooldown(BoxCollider2D[] col)
+    {
+        onKnockbackCooldown = true;
+        foreach (BoxCollider2D c in col)
+        {
+            Physics2D.IgnoreCollision(playerCollider, c, true);
+        }
+        yield return new WaitForSeconds(3f);
+        sp.enabled = true;
+
+        foreach (BoxCollider2D c in col)
+        {
+
+            Physics2D.IgnoreCollision(playerCollider, c, false);
+        }
+        onKnockbackCooldown = false;
+
+    }
 
 
 

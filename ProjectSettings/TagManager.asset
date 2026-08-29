@@ -10,6 +10,7 @@ TagManager:
   - b4
   - footpath
   - enemy
+  - knockbackEnemy
   layers:
   - Default
   - TransparentFX

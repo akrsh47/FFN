@@ -41,6 +41,8 @@ public class playerMovement : MonoBehaviour
     public bool playerCanMove;
 
     private garbageinteraction garbageScript;
+
+    public bool onKnockback;
     private void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
@@ -96,13 +98,25 @@ public class playerMovement : MonoBehaviour
 
         playerCanMove = true;
 
+        onKnockback = false;
 
     }
 
     void Update()
     {
 
-        direction = Vector2.zero;
+        //animation function
+        HandleAnimation();
+
+
+        if (onKnockback == false)
+        {
+            direction = Vector2.zero;
+        }
+        else if (onKnockback == true)
+        {
+            return;
+        }
         // moving right
         if (moveRight)
         {
@@ -214,12 +228,15 @@ public class playerMovement : MonoBehaviour
 
 
 
-        //animation function
-        HandleAnimation();
+
     }
 
     private void FixedUpdate()
     {
+        if (onKnockback)
+        {
+            return;
+        }
 
         // checking if player is not being knockedback and also not in block state, player can move freely
         if (isKnockedBack == false && blockHitbox.enabled == false && playerCanMove)
@@ -289,6 +306,11 @@ public class playerMovement : MonoBehaviour
         {
             animator.SetBool(isTiredHash, false);
 
+        }
+
+        if (onKnockback)
+        {
+            animator.SetTrigger(isHurtHash);
         }
 
 

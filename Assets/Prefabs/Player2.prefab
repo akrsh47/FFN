@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 3259871902351553009}
   - component: {fileID: 2534704362575477553}
   - component: {fileID: 4209173687475780844}
+  - component: {fileID: 524701038531811695}
   m_Layer: 7
   m_Name: Player2
   m_TagString: Player
@@ -198,6 +199,7 @@ MonoBehaviour:
   actions: 
   isKnockedBack: 0
   playerCanMove: 0
+  onKnockback: 0
 --- !u!50 &5831086789856774239
 Rigidbody2D:
   serializedVersion: 5
@@ -307,6 +309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::playerAction
   pushForce: 4
   attackHitbox: {fileID: 5664712746103901759}
+  onKnockbackCooldown: 0
 --- !u!114 &4209173687475780844
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -328,6 +331,18 @@ MonoBehaviour:
   staminaText: {fileID: 0}
   blockHitbox: {fileID: 7620308160565096072}
   refillCooldown: 0
+--- !u!114 &524701038531811695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7814575443673741240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61217db5d87a1be44bb7d9c1e4fec733, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::playerEffect
 --- !u!1 &8939339885004198628
 GameObject:
   m_ObjectHideFlags: 0

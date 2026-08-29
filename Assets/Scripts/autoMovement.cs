@@ -34,7 +34,9 @@ public class autoMovement : MonoBehaviour
         leftEdge = cam.transform.position.x - cam.orthographicSize * cam.aspect; // to get the leftedge of the camera => camera at the center position - height of camera * camera width/height
         rightEdge = cam.transform.position.x + cam.orthographicSize * cam.aspect;
 
-        interval = Random.Range(5f, 10f);
+        //interval = Random.Range(5f, 10f);
+        interval = Random.Range(0f, 1f);
+
 
 
 
@@ -92,6 +94,10 @@ public class autoMovement : MonoBehaviour
                 ResetObject();
             }
         }
+
+
+
+
     }
 
     private void FixedUpdate()
@@ -115,7 +121,8 @@ public class autoMovement : MonoBehaviour
 
     private void ResetObject()
     {
-        interval = Random.Range(5f, 10f);
+        //interval = Random.Range(5f, 10f);
+        interval = Random.Range(0f, 1f);
         timer = 1f;
         randomDirection = Random.Range(0, 2);
 
