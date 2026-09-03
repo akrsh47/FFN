@@ -11,6 +11,7 @@ TagManager:
   - footpath
   - enemy
   - knockbackEnemy
+  - manhole
   layers:
   - Default
   - TransparentFX

@@ -26,6 +26,10 @@ public class playerAction : MonoBehaviour
 
     private SpriteRenderer sp;
 
+    private Collider2D[] allColliders;
+
+    private legHitbox lh;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -33,6 +37,9 @@ public class playerAction : MonoBehaviour
         pm = GetComponent<playerMovement>();
         playerCollider = GetComponent<BoxCollider2D>();
         sp = GetComponent<SpriteRenderer>();
+
+        lh = gameObject.transform.Find("LegHitbox").GetComponent<legHitbox>();
+        allColliders = gameObject.GetComponentsInChildren<Collider2D>();
     }
     private void Start()
     {
@@ -181,11 +188,24 @@ public class playerAction : MonoBehaviour
 
     private void Update()
     {
+
         // if the player is in stamina refillcooldown then dont move the body unless the other player pushes it
         if (ps.refillCooldown == true)
         {
             rb.linearVelocity = Vector2.zero;
 
+        }
+        //Debug.Log(allColliders);
+        if (lh.fell)
+
+
+        {
+            // only turn on the player mask interaction after hitting the manhole hitbox
+            sp.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
+            foreach (Collider2D col in allColliders)
+            {
+                col.enabled = false;
+            }
         }
     }
 
