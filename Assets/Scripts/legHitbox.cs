@@ -32,19 +32,29 @@ public class legHitbox : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         collisionObjectSizeX = collision.bounds.size.x;
-
+       
         if (collision.gameObject.CompareTag("manhole"))
         {
             mask= collision.gameObject.transform.Find("Mask");
             mask.gameObject.SetActive(true);
             fell = true;
-            player.transform.position=new Vector3(player.transform.position.x+collisionObjectSizeX/2,player.transform.position.y,player.transform.position.z); // so that player moves to the center of the manhole before falling down(makes falling look realistic)
+            if (player.transform.position.x < collision.transform.position.x)
+            {
+                player.transform.position = new Vector3(player.transform.position.x + collisionObjectSizeX / 2, player.transform.position.y, player.transform.position.z); // so that player moves to the center of the manhole before falling down(makes falling look realistic)
+            }
+            else if(player.transform.position.x > collision.transform.position.x)
+            {
+                player.transform.position = new Vector3(player.transform.position.x - collisionObjectSizeX / 2, player.transform.position.y, player.transform.position.z); // so that player moves to the center of the manhole before falling down(makes falling look realistic)
+
+            }
         }
 
     }
 
     private void Update()
     {
+
+
         if (fell)
         {
             pm.enabled = false;

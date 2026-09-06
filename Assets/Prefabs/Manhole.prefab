@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3042252636539162012}
   - component: {fileID: 5978663417499292333}
-  - component: {fileID: 5187656968612000393}
   - component: {fileID: 2237862466178984760}
   m_Layer: 0
   m_Name: Manhole
@@ -27,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 723876346401039501}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.97765994, y: -3.67187, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
@@ -94,18 +93,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &5187656968612000393
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 723876346401039501}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3507ecd59511bf94e939cc06cf261765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!61 &2237862466178984760
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -178,8 +165,8 @@ Transform:
   m_GameObject: {fileID: 6708312708605108493}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0084, y: -0.253, z: 0}
-  m_LocalScale: {x: 2, y: 1, z: 1}
+  m_LocalPosition: {x: -0.0084, y: -0.842, z: 0}
+  m_LocalScale: {x: 2, y: 3.1076, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3042252636539162012}
