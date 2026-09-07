@@ -18,11 +18,11 @@ public class playerAction : MonoBehaviour
     private float autoKnockbackAmount;
     private float autoKnockbackDelay;
 
-    public bool onKnockbackCooldown;
+    [HideInInspector]public bool onKnockbackCooldown;
 
     private playerMovement pm;
 
-    private BoxCollider2D playerCollider;
+    private BoxCollider2D[] playerCollider;
 
     private SpriteRenderer sp;
 
@@ -35,7 +35,7 @@ public class playerAction : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         ps = GetComponent<playerStats>();
         pm = GetComponent<playerMovement>();
-        playerCollider = GetComponent<BoxCollider2D>();
+        playerCollider = GetComponentsInChildren<BoxCollider2D>();
         sp = GetComponent<SpriteRenderer>();
 
         lh = gameObject.transform.Find("LegHitbox").GetComponent<legHitbox>();
@@ -125,10 +125,9 @@ public class playerAction : MonoBehaviour
     {
 
 
-        if (collision.gameObject.CompareTag("knockbackEnemy"))
+        if (collision.gameObject.CompareTag("knockbackEnemy") && lh.fell==false)
         {
-            BoxCollider2D[] objectCollider = collision.gameObject.GetComponents<BoxCollider2D>();
-
+            PolygonCollider2D objectCollider = collision.gameObject.GetComponent<PolygonCollider2D>();
 
             SpriteRenderer sp = collision.gameObject.GetComponent<SpriteRenderer>();
             // after hitting the player there should be a cooldown for the player to be hit again
@@ -154,6 +153,10 @@ public class playerAction : MonoBehaviour
             }
 
         }
+
+       
+
+
     }
 
     IEnumerator stopKnockback()
@@ -165,21 +168,26 @@ public class playerAction : MonoBehaviour
 
 
     }
-    IEnumerator knockbackCooldown(BoxCollider2D[] col)
+    IEnumerator knockbackCooldown(PolygonCollider2D col)
     {
         onKnockbackCooldown = true;
-        foreach (BoxCollider2D c in col)
+
+        foreach (BoxCollider2D c in playerCollider)
         {
-            Physics2D.IgnoreCollision(playerCollider, c, true);
+            Physics2D.IgnoreCollision(c, col, true);
         }
+
         yield return new WaitForSeconds(3f);
         sp.enabled = true;
 
-        foreach (BoxCollider2D c in col)
-        {
 
-            Physics2D.IgnoreCollision(playerCollider, c, false);
+
+        foreach (BoxCollider2D c in playerCollider)
+        {
+            Physics2D.IgnoreCollision(c, col, false);
         }
+
+
         onKnockbackCooldown = false;
 
     }
@@ -188,6 +196,7 @@ public class playerAction : MonoBehaviour
 
     private void Update()
     {
+        //Debug.Log(onKnockbackCooldown);
 
         // if the player is in stamina refillcooldown then dont move the body unless the other player pushes it
         if (ps.refillCooldown == true)

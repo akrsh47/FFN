@@ -13,17 +13,20 @@ public class legHitbox : MonoBehaviour
 
     private GameObject player;
 
+    private playerAction pa;
     
     private void Awake()
     {
         pm = transform.parent.gameObject.GetComponent<playerMovement>();
         rb = transform.parent.gameObject.GetComponent<Rigidbody2D>();
-    
+        player = transform.parent.gameObject;
+        pa = player.GetComponent<playerAction>();
+
+
     }
 
     private void Start()
     {
-        player = transform.parent.gameObject;
         fell = false;
     }
 
@@ -33,7 +36,7 @@ public class legHitbox : MonoBehaviour
     {
         collisionObjectSizeX = collision.bounds.size.x;
        
-        if (collision.gameObject.CompareTag("manhole"))
+        if (collision.gameObject.CompareTag("manhole") && pa.onKnockbackCooldown==false)
         {
             mask= collision.gameObject.transform.Find("Mask");
             mask.gameObject.SetActive(true);
@@ -55,7 +58,7 @@ public class legHitbox : MonoBehaviour
     {
 
 
-        if (fell)
+        if (fell && pa.onKnockbackCooldown==false)// onknockbackcooldown =false player should not fall to manhole when in knockbackcooldown
         {
             pm.enabled = false;
             rb.linearVelocity = new Vector2(0, -2);

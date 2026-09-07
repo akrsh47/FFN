@@ -4,8 +4,7 @@ public class autoMovement : MonoBehaviour
 {
     private float interval;
     private float timer;
-    private Vector3 screenPos;
-    private Vector3 endScreenPos;
+    
     [SerializeField] private Camera cam;
 
     private bool isMoving;
@@ -23,10 +22,15 @@ public class autoMovement : MonoBehaviour
 
     private SpriteRenderer sp;
 
+    private GameObject moManager;
+    private moveobjmanager moMangerScript;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sp = GetComponent<SpriteRenderer>();
+        moManager = transform.parent.gameObject;
+        moMangerScript = moManager.GetComponent<moveobjmanager>();
     }
     private void Start()
     {   // cam.orthographicsize = height of camera
@@ -44,7 +48,6 @@ public class autoMovement : MonoBehaviour
         isMoving = false;
         objectSpeed = 10f;
 
-        gameObject.SetActive(false);
 
         randomDirection = Random.Range(0, 2);
 
@@ -65,6 +68,7 @@ public class autoMovement : MonoBehaviour
 
 
         }
+
     }
 
     private void Update()
@@ -140,6 +144,7 @@ public class autoMovement : MonoBehaviour
 
         }
 
-
+        
+        moMangerScript.ResetMovingObject();
     }
 }
