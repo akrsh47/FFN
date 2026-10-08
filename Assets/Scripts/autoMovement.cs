@@ -4,7 +4,7 @@ public class autoMovement : MonoBehaviour
 {
     private float interval;
     private float timer;
-    
+
     [SerializeField] private Camera cam;
 
     private bool isMoving;
@@ -13,8 +13,8 @@ public class autoMovement : MonoBehaviour
 
     [SerializeField] private float objectSpeed;
 
-    private float leftEdge;
-    private float rightEdge;
+    private float[] leftEdge;
+    private float[] rightEdge;
     private float padding = 20f;
 
     private Vector2 direction = new Vector2(0, 0);
@@ -25,21 +25,39 @@ public class autoMovement : MonoBehaviour
     private GameObject moManager;
     private moveobjmanager moMangerScript;
 
+    private GameManager gm;
+
+    private bool resettingObj;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sp = GetComponent<SpriteRenderer>();
         moManager = transform.parent.gameObject;
         moMangerScript = moManager.GetComponent<moveobjmanager>();
+        gm = GameManager.instance;
     }
     private void Start()
     {   // cam.orthographicsize = height of camera
         // cam.aspect = aspect ratio = width/height
-        leftEdge = cam.transform.position.x - cam.orthographicSize * cam.aspect; // to get the leftedge of the camera => camera at the center position - height of camera * camera width/height
-        rightEdge = cam.transform.position.x + cam.orthographicSize * cam.aspect;
+        //leftEdge = cam.transform.position.x - cam.orthographicSize * cam.aspect; // to get the leftedge of the camera => camera at the center position - height of camera * camera width/height
+        //rightEdge = cam.transform.position.x + cam.orthographicSize * cam.aspect;
 
         //interval = Random.Range(5f, 10f);
         interval = Random.Range(0f, 1f);
+
+        leftEdge = new float[3]
+        {
+            gm.camLeftEdge-padding,
+            gm.secondCamPos.x-gm.halfHeight-padding,
+            gm.thirdCamPos.x-gm.halfHeight-padding
+        };
+        rightEdge = new float[3]
+        {
+            gm.camRightEdge+padding,
+            gm.secondCamPos.x+gm.halfHeight+padding,
+            gm.thirdCamPos.x+gm.halfHeight+padding
+        };
 
 
 
@@ -54,20 +72,22 @@ public class autoMovement : MonoBehaviour
         if (randomDirection == 0)
         {
 
-            transform.position = new Vector3(leftEdge - padding, transform.position.y, transform.position.z);
+            transform.position = new Vector3(leftEdge[gm.gameRound - 1], transform.position.y, transform.position.z);
             direction = Vector2.right;
             sp.flipX = false;
 
         }
         else
         {
-            transform.position = new Vector3(rightEdge + padding, transform.position.y, transform.position.z);
+            transform.position = new Vector3(rightEdge[gm.gameRound - 1], transform.position.y, transform.position.z);
             direction = Vector2.left;
             sp.flipX = true;
 
 
 
         }
+
+        resettingObj = false;
 
     }
 
@@ -84,7 +104,7 @@ public class autoMovement : MonoBehaviour
         if (randomDirection == 0)
         {
 
-            if (transform.position.x > rightEdge + padding)
+            if (transform.position.x > rightEdge[gm.gameRound - 1])
             {
                 isMoving = false;
                 ResetObject();
@@ -92,11 +112,17 @@ public class autoMovement : MonoBehaviour
         }
         else
         {
-            if (transform.position.x < leftEdge - padding)
+            if (transform.position.x < leftEdge[gm.gameRound - 1])
             {
                 isMoving = false;
                 ResetObject();
             }
+        }
+
+
+        if (transform.position.x < leftEdge[gm.gameRound - 1] || transform.position.x > rightEdge[gm.gameRound - 1])
+        {
+            resettingObj = true;
         }
 
 
@@ -125,6 +151,9 @@ public class autoMovement : MonoBehaviour
 
     private void ResetObject()
     {
+        resettingObj = false;
+
+
         //interval = Random.Range(5f, 10f);
         interval = Random.Range(0f, 1f);
         timer = 1f;
@@ -132,19 +161,39 @@ public class autoMovement : MonoBehaviour
 
         if (randomDirection == 0)
         {
-            transform.position = new Vector3(leftEdge - padding, transform.position.y, transform.position.z);
+            transform.position = new Vector3(leftEdge[gm.gameRound - 1], transform.position.y, transform.position.z);
             direction = Vector2.right;
             sp.flipX = false;
         }
         else
         {
-            transform.position = new Vector3(rightEdge + padding, transform.position.y, transform.position.z);
+            transform.position = new Vector3(rightEdge[gm.gameRound - 1], transform.position.y, transform.position.z);
             direction = Vector2.left;
             sp.flipX = true;
 
         }
 
-        
+
         moMangerScript.ResetMovingObject();
     }
+
+
+    void pauseMovement()
+    {
+        if (resettingObj)
+        {
+            ResetObject();
+        }
+    }
+
+    private void OnEnable()
+    {
+        GameManager.resetObjects += pauseMovement;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.resetObjects -= pauseMovement;
+    }
+
 }

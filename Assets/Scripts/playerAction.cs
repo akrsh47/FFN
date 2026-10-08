@@ -30,6 +30,8 @@ public class playerAction : MonoBehaviour
 
     private legHitbox lh;
 
+    private float knockBackEnemyDamage;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -45,6 +47,7 @@ public class playerAction : MonoBehaviour
     {
         pushForce = 4f;
         hitDamage = 10f;
+        knockBackEnemyDamage = 15f;
 
         autoKnockbackDelay = 0.2f;
         autoKnockbackAmount = 20f;
@@ -85,7 +88,7 @@ public class playerAction : MonoBehaviour
                 //rb.linearVelocity = Vector2.zero;
                 rb.linearVelocity = new Vector2(transform.localScale.x, 0f) * (pushForce / 8);
                 StartCoroutine(pm.EndKnockBack());
-                ps.playerHealth -= hitDamage;
+                ps.TakeDamage(hitDamage);
 
 
 
@@ -100,7 +103,7 @@ public class playerAction : MonoBehaviour
                 pm.isKnockedBack = true;
 
 
-                ps.playerHealth -= hitDamage;
+                ps.TakeDamage(hitDamage);
             }
 
 
@@ -133,7 +136,7 @@ public class playerAction : MonoBehaviour
             // after hitting the player there should be a cooldown for the player to be hit again
             if (onKnockbackCooldown == false)
             {
-                ps.playerHealth -= 10;
+                ps.TakeDamage(knockBackEnemyDamage);
 
                 if (sp.flipX == false)
                 {

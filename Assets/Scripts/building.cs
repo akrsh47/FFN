@@ -18,6 +18,8 @@ public class building : MonoBehaviour
     [SerializeField] private GameObject[] garbageBags;
     [HideInInspector] public int randomGarbage;
 
+    [HideInInspector] public static bool pauseGarbage;
+
     private void Awake()
     {
         sp = GetComponent<SpriteRenderer>();
@@ -27,6 +29,7 @@ public class building : MonoBehaviour
     }
     void Start()
     {
+        pauseGarbage = false;
         sp.sprite = buildingSprites[0];
         interval = UnityEngine.Random.Range(3f, 5f);
         timer = 1f;
@@ -75,7 +78,7 @@ public class building : MonoBehaviour
 
     }
 
-    void ResetTimer()
+    private void ResetTimer()
     {
         timer = 1f;
         sp.sprite = buildingSprites[0];
@@ -91,7 +94,11 @@ public class building : MonoBehaviour
     void changeBuilding()
     {
         sp.sprite = buildingSprites[1];
-        dropGarbage?.Invoke();// event fires here
+
+        if (pauseGarbage == false)
+        {
+            dropGarbage?.Invoke();// event fires here
+        }
 
     }
 
@@ -103,10 +110,15 @@ public class building : MonoBehaviour
     private void OnEnable()// when object enabled add this function to list of events happening
     {
         dropGarbage += dropingGarbage;
+        GameManager.resetObjects += ResetTimer;
     }
 
     private void OnDisable()// when object disabled remove this function to list of events happening
     {
         dropGarbage -= dropingGarbage;
+        GameManager.resetObjects -= ResetTimer;
     }
+
+
+
 }

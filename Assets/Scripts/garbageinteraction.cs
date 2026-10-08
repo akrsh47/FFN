@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class garbageinteraction : MonoBehaviour
@@ -24,11 +25,14 @@ public class garbageinteraction : MonoBehaviour
 
     private playerMovement pm;
 
+    private PolygonCollider2D garbageCollider;
+
     private void Awake()
     {
         startingPos = gameObject.transform.position;
         sp = gameObject.GetComponent<SpriteRenderer>();
         buildingScript = transform.parent.gameObject.GetComponent<building>();
+        garbageCollider = GetComponent<PolygonCollider2D>();
     }
 
     private void Start()
@@ -54,10 +58,12 @@ public class garbageinteraction : MonoBehaviour
 
     }
 
+    
 
     IEnumerator ResetPositon()
     {
         yield return new WaitForSeconds(1f);
+        garbageCollider.enabled = true;
         garbageOnGround = false;
         sp.sprite = startingSprite;
         gameObject.SetActive(false);
@@ -72,7 +78,6 @@ public class garbageinteraction : MonoBehaviour
 
         animator.SetTrigger(isHitGround);
         transform.rotation = Quaternion.identity;
-        StartCoroutine(ResetPositon());
         if (col.gameObject.CompareTag("Player"))
         {
             hitPlayer = true;
@@ -85,11 +90,12 @@ public class garbageinteraction : MonoBehaviour
                 if (hitPlayer && !endingHitPlayer)
                 {
                     pm.PlayerStunAfterDamage();
-                    ps.playerHealth -= garbageDamage;
-                    if (ps.playerHealth < 0)
-                    {
-                        ps.playerHealth = 0;
-                    }
+
+                    // DISABLE COLLIDER AFTER HITTING IF THE COLLISION NOT WORKING AS EXPECTED 
+
+                    //garbageCollider.enabled = false; 
+
+                    ps.TakeDamage(garbageDamage);
                 }
             }
 
@@ -99,6 +105,8 @@ public class garbageinteraction : MonoBehaviour
 
 
         }
+        StartCoroutine(ResetPositon());
+       
 
     }
 

@@ -1,19 +1,21 @@
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class playerStats : MonoBehaviour
 {
-    public float playerHealth;
+    public static float player1Health;
+    public static float player2Health;
+
+    private float maxHealth;
     public float playerStamina;
 
     public float hitStaminaCost;
     public float blockStaminaCost;
     public float staminaRefillCost;
 
-    public TMP_Text healthText;
-    public TMP_Text staminaText;
-    Vector3 playerScreenPos;
+   
 
     [SerializeField] private BoxCollider2D blockHitbox;
 
@@ -28,11 +30,14 @@ public class playerStats : MonoBehaviour
     {
         pm = GetComponent<playerMovement>();
         rb = GetComponent<Rigidbody2D>();
+
+        player1Health = 50f;
+        player2Health = 50f;
+        maxHealth = 100f;
     }
 
     private void Start()
     {
-        playerHealth = 100f;
         playerStamina = 10f;
 
         hitStaminaCost = 10f;
@@ -45,25 +50,7 @@ public class playerStats : MonoBehaviour
     }
     private void Update()
     {
-        // Text coordinates and gameObject coordinates are different 
-        // converting world coordinates to screen coordinates
-        playerScreenPos = Camera.main.WorldToScreenPoint(gameObject.transform.position);
-
-
-        healthText.text = playerHealth.ToString();
-        staminaText.text = Mathf.RoundToInt(playerStamina).ToString();
-        healthText.color = Color.red;
-        //health on top of player
-        healthText.transform.position = new Vector2(playerScreenPos.x + 100f, playerScreenPos.y + 40f);
-        staminaText.transform.position = new Vector2(playerScreenPos.x + 100f, playerScreenPos.y + 20f);
-
-        // stats must be greater than or equal to 0
-        // and less than or equal to 100
-        //health
-        if (playerHealth <= 0)
-        {
-            playerHealth = 0;
-        }
+        
 
         //stamina
         if (playerStamina <= 0 && refillCooldown == false)
@@ -74,13 +61,13 @@ public class playerStats : MonoBehaviour
             StartCoroutine(RefillCooldownTimer());
 
         }
-        if (playerStamina >= 100)
-        {
-            playerStamina = 100;
-        }
+        
 
 
         RefillStamina();
+       
+
+
     }
 
 
@@ -107,6 +94,23 @@ public class playerStats : MonoBehaviour
         playerStamina = 1f;
 
 
+    }
+
+    public void  TakeDamage(float damage)
+    {
+        //Debug.Log(GameManager.instance.gameRound+" gameround");
+        //Debug.Log(GameManager.instance.whoWon+" whowon");
+
+        if (gameObject.name == "Player1")
+        {
+            player1Health -= damage;
+            player1Health = Mathf.Clamp(player1Health, 0, maxHealth);
+        }
+        if (gameObject.name == "Player2")
+        {
+            player2Health -= damage;
+            player2Health = Mathf.Clamp(player2Health, 0, maxHealth);
+        }
     }
 
 

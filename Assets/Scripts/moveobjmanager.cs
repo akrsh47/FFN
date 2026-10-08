@@ -14,7 +14,6 @@ public class moveobjmanager : MonoBehaviour
         foreach(Transform child in transform)
         {
             movingObjects.Add(child.gameObject);
-            Debug.Log(child.gameObject.name);
         }
 
 
@@ -30,7 +29,6 @@ public class moveobjmanager : MonoBehaviour
             if (chanceOfSpawning == i)
             {
                 movingObjects[i].SetActive(true);
-                Debug.Log("object is now active");
             }
             else
             {
@@ -41,7 +39,6 @@ public class moveobjmanager : MonoBehaviour
 
     public void ResetMovingObject()
     {
-        Debug.Log("reset");
         chanceOfSpawning = Random.Range(0, 2);
         for (int i = 0; i < movingObjects.Count; i++)
         {

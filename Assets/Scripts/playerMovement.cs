@@ -75,6 +75,10 @@ public class playerMovement : MonoBehaviour
 
         if (gameObject.name == "Player2")
         {
+
+            scale.x = -Mathf.Abs(scale.x);
+
+            transform.localScale = scale;
             //initialize controls
             movements = new Key[]
             {
