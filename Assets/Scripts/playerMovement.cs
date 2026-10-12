@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using System.Collections;
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -43,6 +44,8 @@ public class playerMovement : MonoBehaviour
     private garbageinteraction garbageScript;
 
     public bool onKnockback;
+
+    public static event Action<string> OnViolence;
     private void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
@@ -108,7 +111,9 @@ public class playerMovement : MonoBehaviour
 
     void Update()
     {
+     
 
+        
         //animation function
         HandleAnimation();
 
@@ -198,10 +203,14 @@ public class playerMovement : MonoBehaviour
         //attack
         if (Keyboard.current[actions[0]].wasPressedThisFrame)
         {
+
+
             // only make the player use stamina if its above 10f
             // dont make player use attack and block at same
             if (stats.playerStamina >= stats.hitStaminaCost && blockHitbox.enabled == false)
             {
+                if(copmovement.checkingViolence)
+                OnViolence?.Invoke(gameObject.name);
 
                 stats.playerStamina -= stats.hitStaminaCost;
                 StartCoroutine(PlayerHitting());
@@ -212,12 +221,17 @@ public class playerMovement : MonoBehaviour
         // block mechanics
         if (Keyboard.current[actions[1]].isPressed)
         {
+
+            
             //stats.playerStamina-=20f*Time.deltaTime;
             blockHitbox.enabled = true;
+
+
 
             // checking if player is not being knockedback then in block state the player must not move
             if (isKnockedBack == false)
             {
+
 
                 rb.linearVelocity = Vector2.zero;
 
@@ -225,9 +239,19 @@ public class playerMovement : MonoBehaviour
             }
 
         }
+
         else
         {
             blockHitbox.enabled = false;
+        }
+
+
+        // dont want to trigger event each frame , only needed one time
+        if (Keyboard.current[actions[1]].wasPressedThisFrame)
+        {
+            if(copmovement.checkingViolence)
+            OnViolence?.Invoke(gameObject.name);
+
         }
 
 

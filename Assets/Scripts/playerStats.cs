@@ -31,14 +31,14 @@ public class playerStats : MonoBehaviour
         pm = GetComponent<playerMovement>();
         rb = GetComponent<Rigidbody2D>();
 
-        player1Health = 50f;
-        player2Health = 50f;
+        player1Health = 100f;
+        player2Health = 100f;
         maxHealth = 100f;
     }
 
     private void Start()
     {
-        playerStamina = 10f;
+        playerStamina = 100f;
 
         hitStaminaCost = 10f;
         blockStaminaCost = 5f;

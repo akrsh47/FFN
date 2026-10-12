@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -15,12 +16,13 @@ public class copmovement : MonoBehaviour
 
     [SerializeField] private float objectSpeed;
 
+
     private float[] leftEdge;
     private float[] rightEdge;
     private float padding = 20f;
 
     private Vector2 direction = new Vector2(0, 0);
-    private float randomDirection;
+    private int randomDirection;
 
     private SpriteRenderer sp;
 
@@ -36,6 +38,16 @@ public class copmovement : MonoBehaviour
 
     private bool resettingObj;
 
+    private bool stopppedThisTime;
+    private bool stoppedMoving;
+
+    [SerializeField] private float stopDuration;
+
+    public static bool checkingViolence;
+
+    [SerializeField] private GameObject cop;
+
+   
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -43,6 +55,10 @@ public class copmovement : MonoBehaviour
         moManager = transform.parent.gameObject;
         moMangerScript = moManager.GetComponent<moveobjmanager>();
         gm = GameManager.instance;
+
+        
+
+
     }
     private void Start()
     {
@@ -96,15 +112,47 @@ public class copmovement : MonoBehaviour
         blueLight.SetActive(false);
 
         resettingObj = false;
+
+        stopppedThisTime = false;
+        stoppedMoving = false;
+
+        stopDuration = Random.Range(2f, 5f);
+
+        checkingViolence = false;
+
+
+
+
+        // checking the flip of cop
+        if (sp.flipX)
+        {
+
+            cop.transform.localScale = new Vector3(-Mathf.Abs(cop.transform.localScale.x), cop.transform.localScale.y, cop.transform.localScale.z);
+            cop.transform.position = new Vector3(gameObject.transform.position.x - 4, gameObject.transform.position.y + 1, gameObject.transform.position.z);
+        }
+        else
+        {
+            Debug.Log("right");
+            cop.transform.localScale = new Vector3(Mathf.Abs(cop.transform.localScale.x), cop.transform.localScale.y, cop.transform.localScale.z);
+            cop.transform.position = new Vector3(gameObject.transform.position.x + 4, gameObject.transform.position.y + 1, gameObject.transform.position.z);
+
+
+        }
+
+        
     }
 
     private void Update()
     {
 
+
+
         StartTimer();
         BlinkLight();
 
-        if (timer > interval)
+        CopChecking();
+
+        if (timer > interval && !stoppedMoving)
         {
 
             isMoving = true;
@@ -135,10 +183,13 @@ public class copmovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+
+
         if (isMoving)
         {
 
             rb.linearVelocity = objectSpeed * direction;
+
         }
         else
         {
@@ -149,13 +200,17 @@ public class copmovement : MonoBehaviour
 
     private void StartTimer()
     {
+
         timer += Time.deltaTime;
+
         lightTimer += Time.deltaTime;
     }
 
     private void ResetObject()
     {
         resettingObj = false;
+
+        stopDuration = Random.Range(2f, 5f);
 
 
         //interval = Random.Range(5f, 10f);
@@ -165,15 +220,35 @@ public class copmovement : MonoBehaviour
 
         if (randomDirection == 0)
         {
+
             transform.position = new Vector3(leftEdge[gm.gameRound - 1], transform.position.y, transform.position.z);
             direction = Vector2.right;
             sp.flipX = false;
+            stopppedThisTime = false;
         }
         else
         {
             transform.position = new Vector3(rightEdge[gm.gameRound - 1], transform.position.y, transform.position.z);
             direction = Vector2.left;
             sp.flipX = true;
+            stopppedThisTime = false;
+
+
+        }
+
+        // checking the flip of cop
+        if (sp.flipX)
+        {
+
+            cop.transform.localScale = new Vector3(-Mathf.Abs(cop.transform.localScale.x), cop.transform.localScale.y, cop.transform.localScale.z);
+            cop.transform.position = new Vector3(gameObject.transform.position.x - 4, gameObject.transform.position.y + 1, gameObject.transform.position.z);
+        }
+        else
+        {
+            Debug.Log("right");
+            cop.transform.localScale = new Vector3(Mathf.Abs(cop.transform.localScale.x), cop.transform.localScale.y, cop.transform.localScale.z);
+            cop.transform.position = new Vector3(gameObject.transform.position.x + 4, gameObject.transform.position.y + 1, gameObject.transform.position.z);
+
 
         }
 
@@ -210,6 +285,98 @@ public class copmovement : MonoBehaviour
     private void OnDisable()
     {
         GameManager.resetObjects -= pauseMovement;
+
     }
+
+
+
+
+    // cop car property
+    void CopChecking()
+    {
+        
+
+        if (stopppedThisTime == false)
+        {
+
+            if (gameObject.transform.position.x >= Camera.main.transform.position.x && randomDirection == 0 && !stopppedThisTime)
+            {
+
+
+                stoppedMoving = true;
+                isMoving = false;
+                rb.linearVelocity = Vector2.zero;
+                stopppedThisTime = true;
+                if (gameObject.activeSelf)
+                {
+                    StartCoroutine(WaitingForMovement(stopDuration));
+                }
+
+
+
+            }
+
+            if (gameObject.transform.position.x <= Camera.main.transform.position.x && randomDirection == 1 && !stopppedThisTime)
+            {
+
+
+                stoppedMoving = true;
+                rb.linearVelocity = Vector2.zero;
+                isMoving = false;
+                stopppedThisTime = true;
+                if (gameObject.activeSelf)
+                {
+                    StartCoroutine(WaitingForMovement(stopDuration));
+                }
+
+
+            }
+
+
+            if (checkingViolence)
+            {
+                playerMovement.OnViolence -= CheckWhoViolence;
+                playerMovement.OnViolence += CheckWhoViolence;
+            }
+
+
+        }
+
+
+    }
+
+    void CheckWhoViolence(string name)
+    {
+        if (name == "Player1")
+        {
+            playerStats.player1Health = 0;
+        }
+        else if (name == "Player2")
+        {
+            playerStats.player2Health = 0;
+        }
+
+        Debug.Log("attacking");
+    }
+
+    IEnumerator WaitingForMovement(float duration)
+    {
+        checkingViolence = true;
+        cop.SetActive(true);
+        yield return new WaitForSeconds(duration);
+        cop.SetActive(false);
+        checkingViolence = false;
+        rb.linearVelocity = objectSpeed * direction;
+        isMoving = true;
+        stoppedMoving = false;
+    }
+
+
+    IEnumerator Wait(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+    }
+    
+
 
 }

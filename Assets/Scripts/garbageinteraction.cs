@@ -93,7 +93,7 @@ public class garbageinteraction : MonoBehaviour
 
                     // DISABLE COLLIDER AFTER HITTING IF THE COLLISION NOT WORKING AS EXPECTED 
 
-                    //garbageCollider.enabled = false; 
+                    garbageCollider.enabled = false; 
 
                     ps.TakeDamage(garbageDamage);
                 }

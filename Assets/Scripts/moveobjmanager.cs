@@ -23,6 +23,7 @@ public class moveobjmanager : MonoBehaviour
     private void Start()
     {
         chanceOfSpawning = Random.Range(0, 2);
+        
 
         for(int i = 0; i < movingObjects.Count; i++)
         {
@@ -40,6 +41,7 @@ public class moveobjmanager : MonoBehaviour
     public void ResetMovingObject()
     {
         chanceOfSpawning = Random.Range(0, 2);
+        
         for (int i = 0; i < movingObjects.Count; i++)
         {
             if (chanceOfSpawning == i)

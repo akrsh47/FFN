@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour
@@ -23,7 +24,7 @@ public class GameManager : MonoBehaviour
 
     private Vector3 currentCamPos;
 
-    private float camMoveSpeed = 4f;
+    [HideInInspector] public float camMoveSpeed = 4f;
 
     [SerializeField] private GameObject player1;
     [SerializeField] private GameObject player2;
@@ -36,8 +37,8 @@ public class GameManager : MonoBehaviour
     private Vector3 p1LevelPos;
     private Vector3 p2LevelPos;
 
-    private playerMovement pm1;
-    private playerMovement pm2;
+    [HideInInspector] public playerMovement pm1;
+    [HideInInspector] public playerMovement pm2;
 
     private playerAction pa1;
     private playerAction pa2;
@@ -47,6 +48,12 @@ public class GameManager : MonoBehaviour
 
     public static event Action resetObjects;
 
+    [SerializeField] private GameObject trophy;
+    [SerializeField] private GameObject trophyParent1;
+    [SerializeField] private GameObject trophyParent2;
+
+
+    [SerializeField] private GameObject pauseButton;
     private void Awake()
     {
 
@@ -56,12 +63,13 @@ public class GameManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
         }
+
 
         pm1 = player1.GetComponent<playerMovement>();
         pm2 = player2.GetComponent<playerMovement>();
@@ -80,8 +88,19 @@ public class GameManager : MonoBehaviour
 
     }
 
+
+    private void Start()
+    {
+
+
+        pm1.enabled = true;
+        pm2.enabled = true;
+    }
+
     private void Update()
     {
+
+
 
         if (gameRound < 4)
         {
@@ -93,6 +112,9 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator MoveCamera(float duration, Vector3 startPos, Vector3 endPos)
     {
+
+
+
         yield return new WaitForSeconds(1f); // Wait a time then move the camera
         timer = 0f;
         while (timer < duration)
@@ -124,28 +146,71 @@ public class GameManager : MonoBehaviour
         pm2.onKnockback = false;
         pm1.playerCanMove = true;
         pm2.playerCanMove = true;
-        //scale.x = -Mathf.Abs(scale.x);
 
-        //transform.localScale = scale;
+        pm1.enabled = true;
+        pm2.enabled = true;
+
+        player1.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+        player2.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+
+        legHitbox lh1 = player1.GetComponentInChildren<legHitbox>();
+        legHitbox lh2 = player2.GetComponentInChildren<legHitbox>();
+
+        lh1.fell = false;
+        lh2.fell = false;
+
+        lh1.GetComponent<BoxCollider2D>().enabled = true;
+        lh2.GetComponent<BoxCollider2D>().enabled = true;
+
+        player1.GetComponent<BoxCollider2D>().enabled = true;
+        player2.GetComponent<BoxCollider2D>().enabled = true;
 
         building.pauseGarbage = false;
         resetObjects?.Invoke();
+        pauseButton.SetActive(true);
 
 
     }
 
 
-    private void UpdateRound()
+    public void UpdateRound()
     {
+
+
+
         if (gameRound == 3)
         {
+
+            if (playerStats.player1Health <= 0)
+            {
+                float trophyChildCount = 0;
+                trophyChildCount = trophyParent2.transform.childCount;
+                Instantiate(trophy, new Vector3(trophyParent2.transform.position.x + 20 * trophyChildCount, trophyParent2.transform.position.y, trophyParent2.transform.position.z), Quaternion.identity, trophyParent2.transform);
+                playerStats.player1Health = 1f;
+                playerStats.player2Health = 1f;
+            }
+            if (playerStats.player2Health <= 0)
+            {
+                float trophyChildCount = 0;
+                trophyChildCount = trophyParent1.transform.childCount;
+                Instantiate(trophy, new Vector3(trophyParent1.transform.position.x + 20 * trophyChildCount, trophyParent1.transform.position.y, trophyParent1.transform.position.z), Quaternion.identity, trophyParent1.transform);
+                playerStats.player1Health = 1f;
+                playerStats.player2Health = 1f;
+            }
+
             return;
         }
 
         if (playerStats.player1Health <= 0)
         {
-            StartCoroutine(EnableActors());
 
+            float trophyChildCount = 0;
+            trophyChildCount = trophyParent2.transform.childCount;
+            Instantiate(trophy, new Vector3(trophyParent2.transform.position.x + 10 * trophyChildCount, trophyParent2.transform.position.y, trophyParent2.transform.position.z), Quaternion.identity, trophyParent2.transform);
+
+            StartCoroutine(EnableActors());
+            pm1.enabled = false;
+            pm2.enabled = false;
 
             gameRound++;
             UpdateCurrentCam();
@@ -153,16 +218,23 @@ public class GameManager : MonoBehaviour
             playerStats.player1Health = 100f;
             building.pauseGarbage = true;
             StartCoroutine(MoveCamera(camMoveSpeed, Camera.main.transform.position, currentCamPos));
-
+            pauseButton.SetActive(false);
 
 
         }
         if (playerStats.player2Health <= 0)
         {
+
+            float trophyChildCount = 0;
+            trophyChildCount = trophyParent1.transform.childCount;
+            Instantiate(trophy, new Vector3(trophyParent1.transform.position.x + 10 * trophyChildCount, trophyParent1.transform.position.y, trophyParent1.transform.position.z), Quaternion.identity, trophyParent1.transform);
+            //Instantiate(trophy, trophyParent1.transform.position, Quaternion.identity, trophyParent1.transform);
+
             StartCoroutine(EnableActors());
 
 
-
+            pm1.enabled = false;
+            pm2.enabled = false;
 
             gameRound++;
             UpdateCurrentCam();
@@ -170,6 +242,7 @@ public class GameManager : MonoBehaviour
             playerStats.player2Health = 100f;
             building.pauseGarbage = true;
             StartCoroutine(MoveCamera(camMoveSpeed, Camera.main.transform.position, currentCamPos));
+            pauseButton.SetActive(false);
 
         }
 
@@ -200,6 +273,10 @@ public class GameManager : MonoBehaviour
         player1.SetActive(false);
         player2.SetActive(false);
     }
+
+
+
+
 
 
 }
