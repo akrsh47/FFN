@@ -54,6 +54,9 @@ public class GameManager : MonoBehaviour
 
 
     [SerializeField] private GameObject pauseButton;
+
+
+    private const string WINSCENE = "WinScene";
     private void Awake()
     {
 
@@ -114,8 +117,8 @@ public class GameManager : MonoBehaviour
     {
 
 
-
         yield return new WaitForSeconds(1f); // Wait a time then move the camera
+        Debug.Log("play again");
         timer = 0f;
         while (timer < duration)
         {
@@ -188,6 +191,9 @@ public class GameManager : MonoBehaviour
                 Instantiate(trophy, new Vector3(trophyParent2.transform.position.x + 20 * trophyChildCount, trophyParent2.transform.position.y, trophyParent2.transform.position.z), Quaternion.identity, trophyParent2.transform);
                 playerStats.player1Health = 1f;
                 playerStats.player2Health = 1f;
+                whoWon += -1;
+                PlayerPrefs.SetInt("Winner", whoWon);
+                StartCoroutine(ShowWinScreen());
             }
             if (playerStats.player2Health <= 0)
             {
@@ -196,6 +202,11 @@ public class GameManager : MonoBehaviour
                 Instantiate(trophy, new Vector3(trophyParent1.transform.position.x + 20 * trophyChildCount, trophyParent1.transform.position.y, trophyParent1.transform.position.z), Quaternion.identity, trophyParent1.transform);
                 playerStats.player1Health = 1f;
                 playerStats.player2Health = 1f;
+                whoWon += 1;
+                PlayerPrefs.SetInt("Winner", whoWon);
+                StartCoroutine(ShowWinScreen());
+
+
             }
 
             return;
@@ -275,7 +286,11 @@ public class GameManager : MonoBehaviour
     }
 
 
-
+    IEnumerator ShowWinScreen()
+    {
+        yield return new WaitForSeconds(2f);
+        SceneManager.LoadScene(WINSCENE);
+    }
 
 
 

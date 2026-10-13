@@ -71,7 +71,7 @@ public class playerMovement : MonoBehaviour
 
             actions = new Key[] {
                 Key.LeftCtrl,
-                Key.LeftShift
+                Key.Space
 
             };
         }

@@ -12,7 +12,8 @@ public class pauseMenuManager : MonoBehaviour
     [SerializeField] private GameObject player2;
 
 
-
+    private const string GameScene = "Game";
+    private const string MainMenuScene = "MainMenu";
 
     private void Start()
     {
@@ -36,22 +37,17 @@ public class pauseMenuManager : MonoBehaviour
         Debug.Log("game restarted");
         Time.timeScale = 1f;
 
-        player1.SetActive(true);
-        player2.SetActive(true);
 
 
-        SceneManager.LoadScene("Main");
+        gameObject.SetActive(false);
+        SceneManager.LoadScene(GameScene);
 
 
     }
 
     void ExitGame()
     {
-        Debug.Log("Quit");
-        Application.Quit();
+        SceneManager.LoadScene(MainMenuScene);
 
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#endif
     }
 }
