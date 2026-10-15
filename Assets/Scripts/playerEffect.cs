@@ -13,6 +13,9 @@ public class playerEffect : MonoBehaviour
 
     private float blinkingTimer;
 
+    [SerializeField]private ParticleSystem blood1;
+    [SerializeField]private ParticleSystem blood2;
+
     private void Awake()
     {
         sp = GetComponent<SpriteRenderer>();
@@ -21,7 +24,16 @@ public class playerEffect : MonoBehaviour
 
     private void Start()
     {
+        if (gameObject.name == "Player1")
+        {
+            blood1.transform.position = gameObject.transform.position;
 
+        }
+        else if (gameObject.name == "Player2")
+        {
+            blood2.transform.position = gameObject.transform.position;
+
+        }
         blinkingTimer = 0f;
     }
 
@@ -46,4 +58,37 @@ public class playerEffect : MonoBehaviour
             blinkingTimer = 0f;
         }
     }
+
+    void TakeDamageEffect(string name)
+    {
+        if (gameObject.name == "Player1")
+        {
+            blood1.transform.position = gameObject.transform.position;
+
+        }
+        else if (gameObject.name == "Player2")
+        {
+            blood2.transform.position = gameObject.transform.position;
+
+        }
+
+        if (name == "Player1")
+        {
+            blood1.Play();
+        }
+        else if (name == "Player2")
+        {
+            blood2.Play();
+        }
+    }
+
+    private void OnEnable()
+    {
+        playerStats.DamageEffect += TakeDamageEffect;
+    }
+    private void OnDisable()
+    {
+        playerStats.DamageEffect -= TakeDamageEffect;
+    }
+
 }

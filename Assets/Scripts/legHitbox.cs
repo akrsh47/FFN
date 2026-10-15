@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class legHitbox : MonoBehaviour
@@ -16,8 +18,10 @@ public class legHitbox : MonoBehaviour
 
     private playerAction pa;
 
-    
+    public event Action FellDownText;
 
+
+    [SerializeField]private TextMeshProUGUI deathText;
     
 
 
@@ -44,10 +48,17 @@ public class legHitbox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+
+
         collisionObjectSizeX = collision.bounds.size.x;
 
         if (collision.gameObject.CompareTag("manhole") && pa.onKnockbackCooldown == false)
         {
+            InfoUIManager.whoDied = gameObject.transform.parent.name;
+            InfoUIManager.deathReason = " was injured!";
+            deathText.text = InfoUIManager.whoDied + InfoUIManager.deathReason;
+            FellDownText?.Invoke();
+
             mask = collision.gameObject.transform.Find("Mask");
             mask.gameObject.SetActive(true);
             fell = true;
@@ -112,4 +123,30 @@ public class legHitbox : MonoBehaviour
         }
     }
 
+    void CallDeathText()
+    {
+        StartCoroutine(ShowAndHideText());
+    }
+
+    IEnumerator ShowAndHideText()
+    {
+        deathText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        deathText.gameObject.SetActive(false);
+        FellDownText -= CallDeathText;
+
+
+
+    }
+
+
+    private void OnEnable()
+    {
+        FellDownText += CallDeathText;
+    }
+
+    private void OnDisable()
+    {
+        FellDownText -= CallDeathText;
+    }
 }

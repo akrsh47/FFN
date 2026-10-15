@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using Unity.VisualScripting;
@@ -25,6 +26,8 @@ public class playerStats : MonoBehaviour
     private playerMovement pm;
     private playerAction pa;
     private Rigidbody2D rb;
+
+    public static event Action<string> DamageEffect;
 
     private void Awake()
     {
@@ -105,11 +108,13 @@ public class playerStats : MonoBehaviour
         {
             player1Health -= damage;
             player1Health = Mathf.Clamp(player1Health, 0, maxHealth);
+            DamageEffect?.Invoke(gameObject.name);
         }
         if (gameObject.name == "Player2")
         {
             player2Health -= damage;
             player2Health = Mathf.Clamp(player2Health, 0, maxHealth);
+            DamageEffect?.Invoke(gameObject.name);
         }
     }
 

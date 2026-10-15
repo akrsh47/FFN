@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using Random = UnityEngine.Random;
 
 public class copmovement : MonoBehaviour
 {
@@ -47,7 +50,11 @@ public class copmovement : MonoBehaviour
 
     [SerializeField] private GameObject cop;
 
-   
+    [SerializeField]private GameObject cautionText;
+
+    public event Action<string> copCaught;
+
+    [SerializeField]private TextMeshProUGUI caughtText;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -280,11 +287,14 @@ public class copmovement : MonoBehaviour
     private void OnEnable()
     {
         GameManager.resetObjects += pauseMovement;
+
+        copCaught += HandleShowCaughtText;
     }
 
     private void OnDisable()
     {
         GameManager.resetObjects -= pauseMovement;
+        copCaught -= HandleShowCaughtText;
 
     }
 
@@ -350,20 +360,25 @@ public class copmovement : MonoBehaviour
         if (name == "Player1")
         {
             playerStats.player1Health = 0;
+            copCaught?.Invoke(name);
         }
         else if (name == "Player2")
         {
             playerStats.player2Health = 0;
+            copCaught?.Invoke(name);
+
         }
 
-        Debug.Log("attacking");
+
     }
 
     IEnumerator WaitingForMovement(float duration)
     {
         checkingViolence = true;
         cop.SetActive(true);
+        cautionText.SetActive(true);
         yield return new WaitForSeconds(duration);
+        cautionText.SetActive(false);
         cop.SetActive(false);
         checkingViolence = false;
         rb.linearVelocity = objectSpeed * direction;
@@ -372,9 +387,22 @@ public class copmovement : MonoBehaviour
     }
 
 
-    IEnumerator Wait(float duration)
+    IEnumerator ShowAndHideCaughtText(float duration)
     {
+        caughtText.gameObject.SetActive(true);
         yield return new WaitForSeconds(duration);
+        caughtText.gameObject.SetActive(false);
+
+    }
+
+    void HandleShowCaughtText(string name)
+    {
+        InfoUIManager.whoDied = name;
+        InfoUIManager.deathReason = " was Caught by Cops";
+
+        caughtText.text = name + InfoUIManager.deathReason;
+        StartCoroutine(ShowAndHideCaughtText(2f));
+
     }
     
 

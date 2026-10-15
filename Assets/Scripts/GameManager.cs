@@ -57,6 +57,8 @@ public class GameManager : MonoBehaviour
 
 
     private const string WINSCENE = "WinScene";
+
+    [SerializeField] private GameObject roundBoard;
     private void Awake()
     {
 
@@ -98,6 +100,9 @@ public class GameManager : MonoBehaviour
 
         pm1.enabled = true;
         pm2.enabled = true;
+
+
+        StartCoroutine(ShowAndHideRound());
     }
 
     private void Update()
@@ -118,7 +123,7 @@ public class GameManager : MonoBehaviour
 
 
         yield return new WaitForSeconds(1f); // Wait a time then move the camera
-        Debug.Log("play again");
+        
         timer = 0f;
         while (timer < duration)
         {
@@ -131,6 +136,8 @@ public class GameManager : MonoBehaviour
         }
         Camera.main.transform.position = endPos;
 
+
+        StartCoroutine(ShowAndHideRound());
         player1.SetActive(true);
         player1.GetComponent<SpriteRenderer>().enabled = true;
         player2.SetActive(true);
@@ -208,12 +215,14 @@ public class GameManager : MonoBehaviour
 
 
             }
+            
 
             return;
         }
 
         if (playerStats.player1Health <= 0)
         {
+            
 
             float trophyChildCount = 0;
             trophyChildCount = trophyParent2.transform.childCount;
@@ -235,6 +244,7 @@ public class GameManager : MonoBehaviour
         }
         if (playerStats.player2Health <= 0)
         {
+            
 
             float trophyChildCount = 0;
             trophyChildCount = trophyParent1.transform.childCount;
@@ -292,6 +302,19 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(WINSCENE);
     }
 
+
+    IEnumerator ShowAndHideRound()
+    {
+        roundBoard.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        roundBoard.SetActive(false);
+
+    }
+
+    IEnumerator ShowAndHideText()
+    {
+        yield return new WaitForSeconds(1f);
+    }
 
 
 }

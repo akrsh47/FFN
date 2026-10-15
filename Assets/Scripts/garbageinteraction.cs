@@ -27,8 +27,11 @@ public class garbageinteraction : MonoBehaviour
 
     private PolygonCollider2D garbageCollider;
 
+    [SerializeField]private ParticleSystem hitGroundParticle;
+
     private void Awake()
     {
+        hitGroundParticle = gameObject.GetComponent<ParticleSystem>();
         startingPos = gameObject.transform.position;
         sp = gameObject.GetComponent<SpriteRenderer>();
         buildingScript = transform.parent.gameObject.GetComponent<building>();
@@ -78,6 +81,9 @@ public class garbageinteraction : MonoBehaviour
 
         animator.SetTrigger(isHitGround);
         transform.rotation = Quaternion.identity;
+        hitGroundParticle.Play();
+        Debug.Log("played");
+
         if (col.gameObject.CompareTag("Player"))
         {
             hitPlayer = true;
