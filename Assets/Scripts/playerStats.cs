@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class playerStats : MonoBehaviour
 {
@@ -29,6 +30,9 @@ public class playerStats : MonoBehaviour
 
     public static event Action<string> DamageEffect;
 
+    private PlayerAudioManager playerAudio;
+
+
     private void Awake()
     {
         pm = GetComponent<playerMovement>();
@@ -37,6 +41,8 @@ public class playerStats : MonoBehaviour
         player1Health = 100f;
         player2Health = 100f;
         maxHealth = 100f;
+
+        playerAudio = GetComponent<PlayerAudioManager>();
     }
 
     private void Start()
@@ -46,7 +52,7 @@ public class playerStats : MonoBehaviour
         hitStaminaCost = 10f;
         blockStaminaCost = 5f;
 
-        staminaRefillCost = 1f;
+        staminaRefillCost = 5f;
 
         refillCooldown = false;
         refillCooldownTime = 3f;
@@ -101,9 +107,8 @@ public class playerStats : MonoBehaviour
 
     public void  TakeDamage(float damage)
     {
-        //Debug.Log(GameManager.instance.gameRound+" gameround");
-        //Debug.Log(GameManager.instance.whoWon+" whowon");
 
+        playerAudio.PlayAudio(playerAudio.hit, Random.Range(1f, 3f), 0.25f);
         if (gameObject.name == "Player1")
         {
             player1Health -= damage;

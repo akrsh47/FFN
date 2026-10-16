@@ -29,6 +29,8 @@ public class autoMovement : MonoBehaviour
 
     private bool resettingObj;
 
+    private MovingObjectAudio movingAudio;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -36,6 +38,8 @@ public class autoMovement : MonoBehaviour
         moManager = transform.parent.gameObject;
         moMangerScript = moManager.GetComponent<moveobjmanager>();
         gm = GameManager.instance;
+
+        movingAudio = GetComponent<MovingObjectAudio>();
     }
     private void Start()
     {   // cam.orthographicsize = height of camera
@@ -44,7 +48,7 @@ public class autoMovement : MonoBehaviour
         //rightEdge = cam.transform.position.x + cam.orthographicSize * cam.aspect;
 
         //interval = Random.Range(5f, 10f);
-        interval = Random.Range(0f, 1f);
+        interval = Random.Range(3f, 6f);
 
         leftEdge = new float[3]
         {
@@ -89,16 +93,26 @@ public class autoMovement : MonoBehaviour
 
         resettingObj = false;
 
+        //movingAudio.PlayAudio(movingAudio.auto,1,0.8f);
+
     }
 
     private void Update()
     {
+
+        
+
         StartTimer();
 
         if (timer > interval)
         {
 
             isMoving = true;
+        }
+
+        if (!isMoving)
+        {
+            movingAudio.PlayAudio(movingAudio.auto, 1, 0.8f);
         }
 
         if (randomDirection == 0)
@@ -151,11 +165,13 @@ public class autoMovement : MonoBehaviour
 
     private void ResetObject()
     {
+        //movingAudio.PlayAudio(movingAudio.auto, 1, 0.8f);
+
         resettingObj = false;
 
 
         //interval = Random.Range(5f, 10f);
-        interval = Random.Range(0f, 1f);
+        interval = Random.Range(3f, 6f);
         timer = 1f;
         randomDirection = Random.Range(0, 2);
 

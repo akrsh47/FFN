@@ -55,6 +55,9 @@ public class copmovement : MonoBehaviour
     public event Action<string> copCaught;
 
     [SerializeField]private TextMeshProUGUI caughtText;
+
+    private MovingObjectAudio movingAudio;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -62,6 +65,8 @@ public class copmovement : MonoBehaviour
         moManager = transform.parent.gameObject;
         moMangerScript = moManager.GetComponent<moveobjmanager>();
         gm = GameManager.instance;
+
+        movingAudio = gameObject.GetComponent<MovingObjectAudio>();
 
         
 
@@ -83,7 +88,7 @@ public class copmovement : MonoBehaviour
         };
 
         //interval = Random.Range(5f, 10f);
-        interval = Random.Range(0f, 1f);
+        interval = Random.Range(3f, 6f);
 
 
 
@@ -146,13 +151,17 @@ public class copmovement : MonoBehaviour
 
         }
 
-        
+        //movingAudio.PlayAudio(movingAudio.cop);
     }
 
     private void Update()
     {
+        if (!isMoving)
+        {
+            movingAudio.PlayAudio(movingAudio.cop);
+        }
 
-
+        Debug.Log(isMoving);
 
         StartTimer();
         BlinkLight();
@@ -215,13 +224,15 @@ public class copmovement : MonoBehaviour
 
     private void ResetObject()
     {
+       // movingAudio.PlayAudio(movingAudio.cop);
+
         resettingObj = false;
 
         stopDuration = Random.Range(2f, 5f);
 
 
         //interval = Random.Range(5f, 10f);
-        interval = Random.Range(0f, 1f);
+        interval = Random.Range(3f, 6f);
         timer = 1f;
         randomDirection = Random.Range(0, 2);
 
@@ -398,7 +409,7 @@ public class copmovement : MonoBehaviour
     void HandleShowCaughtText(string name)
     {
         InfoUIManager.whoDied = name;
-        InfoUIManager.deathReason = " was Caught by Cops";
+        InfoUIManager.deathReason = " was Arrested!";
 
         caughtText.text = name + InfoUIManager.deathReason;
         StartCoroutine(ShowAndHideCaughtText(2f));

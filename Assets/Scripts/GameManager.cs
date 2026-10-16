@@ -137,6 +137,9 @@ public class GameManager : MonoBehaviour
         Camera.main.transform.position = endPos;
 
 
+        playerStats.player2Health = 100f;
+        playerStats.player1Health = 100f;
+
         StartCoroutine(ShowAndHideRound());
         player1.SetActive(true);
         player1.GetComponent<SpriteRenderer>().enabled = true;
@@ -236,6 +239,7 @@ public class GameManager : MonoBehaviour
             UpdateCurrentCam();
             whoWon += -1;
             playerStats.player1Health = 100f;
+            playerStats.player2Health = 100f;
             building.pauseGarbage = true;
             StartCoroutine(MoveCamera(camMoveSpeed, Camera.main.transform.position, currentCamPos));
             pauseButton.SetActive(false);
@@ -261,6 +265,7 @@ public class GameManager : MonoBehaviour
             UpdateCurrentCam();
             whoWon += 1;
             playerStats.player2Health = 100f;
+            playerStats.player1Health = 100f;
             building.pauseGarbage = true;
             StartCoroutine(MoveCamera(camMoveSpeed, Camera.main.transform.position, currentCamPos));
             pauseButton.SetActive(false);

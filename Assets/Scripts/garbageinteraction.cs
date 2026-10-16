@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
-
+using Random = UnityEngine.Random;
 public class garbageinteraction : MonoBehaviour
 {
 
@@ -29,6 +29,8 @@ public class garbageinteraction : MonoBehaviour
 
     [SerializeField]private ParticleSystem hitGroundParticle;
 
+    private AudioSource garbageSoundFX;
+
     private void Awake()
     {
         hitGroundParticle = gameObject.GetComponent<ParticleSystem>();
@@ -36,6 +38,8 @@ public class garbageinteraction : MonoBehaviour
         sp = gameObject.GetComponent<SpriteRenderer>();
         buildingScript = transform.parent.gameObject.GetComponent<building>();
         garbageCollider = GetComponent<PolygonCollider2D>();
+
+        garbageSoundFX = GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -54,6 +58,9 @@ public class garbageinteraction : MonoBehaviour
             if (collision.gameObject.CompareTag("footpath"))
             {
                 garbageOnGround = true;
+                hitGroundParticle.Play();
+                PlayAudio();
+                
             }
             garbageFell(collision);
 
@@ -81,8 +88,7 @@ public class garbageinteraction : MonoBehaviour
 
         animator.SetTrigger(isHitGround);
         transform.rotation = Quaternion.identity;
-        hitGroundParticle.Play();
-        Debug.Log("played");
+        
 
         if (col.gameObject.CompareTag("Player"))
         {
@@ -117,7 +123,11 @@ public class garbageinteraction : MonoBehaviour
     }
 
 
-
+    void PlayAudio()
+    {
+        garbageSoundFX.pitch = Random.Range(1f, 3f);
+        garbageSoundFX.PlayOneShot(garbageSoundFX.clip);
+    }
 
 
 }

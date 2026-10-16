@@ -1,5 +1,4 @@
 using System;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class building : MonoBehaviour
@@ -31,7 +30,7 @@ public class building : MonoBehaviour
     {
         pauseGarbage = false;
         sp.sprite = buildingSprites[0];
-        interval = UnityEngine.Random.Range(3f, 5f);
+        interval = UnityEngine.Random.Range(3f, 6f);
         timer = 1f;
 
         if (gameObject.tag == "b1")
@@ -82,7 +81,7 @@ public class building : MonoBehaviour
     {
         timer = 1f;
         sp.sprite = buildingSprites[0];
-        interval = UnityEngine.Random.Range(3f, 5f);
+        interval = UnityEngine.Random.Range(3f, 6f);
         randomGarbage = UnityEngine.Random.Range(0, garbagePerBuilding);
 
     }

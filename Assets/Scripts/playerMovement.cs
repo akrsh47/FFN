@@ -5,6 +5,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+using Random = UnityEngine.Random;
+
 public class playerMovement : MonoBehaviour
 {
 
@@ -46,11 +48,15 @@ public class playerMovement : MonoBehaviour
     public bool onKnockback;
 
     public static event Action<string> OnViolence;
+
+
+    private PlayerAudioManager playerAudio;
     private void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
         sp = gameObject.GetComponent<SpriteRenderer>();
         stats = gameObject.GetComponent<playerStats>();
+        playerAudio = gameObject.GetComponent<PlayerAudioManager>();
     }
 
     private void Start()
@@ -204,12 +210,14 @@ public class playerMovement : MonoBehaviour
         if (Keyboard.current[actions[0]].wasPressedThisFrame)
         {
 
-
             // only make the player use stamina if its above 10f
             // dont make player use attack and block at same
             if (stats.playerStamina >= stats.hitStaminaCost && blockHitbox.enabled == false)
             {
-                if(copmovement.checkingViolence)
+
+                playerAudio.PlayAudio(playerAudio.hitting, Random.Range(1f, 3f), 0.1f);
+
+                if (copmovement.checkingViolence)
                 OnViolence?.Invoke(gameObject.name);
 
                 stats.playerStamina -= stats.hitStaminaCost;
@@ -223,7 +231,7 @@ public class playerMovement : MonoBehaviour
         {
 
             
-            //stats.playerStamina-=20f*Time.deltaTime;
+            stats.playerStamina-=20f*Time.deltaTime;
             blockHitbox.enabled = true;
 
 
